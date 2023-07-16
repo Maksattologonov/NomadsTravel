@@ -15,4 +15,4 @@ class City(models.Model):
 class Region(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Название области'))
     description = models.TextField(verbose_name=_('Описание'))
-    image = models.FileField(upload_to='regions')
+    image = models.FileField(upload_to='regions', verbose_name=_('Изображение'))
