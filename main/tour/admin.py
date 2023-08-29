@@ -47,3 +47,8 @@ class LocationAdmin(ModelAdmin):
     geomap_default_longitude = "77.84343"
     geomap_default_latitude = "42.84343"
     geomap_default_zoom = '5'
+
+
+@admin.register(RatingAccommodation)
+class RatingAccommodationAdmin(admin.ModelAdmin):
+    pass

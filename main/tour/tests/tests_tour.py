@@ -8,14 +8,16 @@ from tour.models import *
 
 class TestTourView(APITestCase):
     def setUp(self) -> None:
-        country = Country.objects.create(name='Кыргызстан',
-                                         image=ContentFile(b"../../media/countries/", name="foo.png"))
+        location = Location.objects.create(name='Бишкек', lon=70.3131, lat=43.2312)
+        country = Country.objects.create(name='Кыргызстан', description='Spme descr', location=location.name)
+        country_image = CountryImage.create(country_id=country.name, image=ContentFile(b"../../media/countries/"))
         region = Region.objects.create(name='Чуй',
                                        description="Lorem ipsum dolor amet",
-                                       image=ContentFile(b"../../media/countries/", name="foo.png"),
                                        country=country)
+        region_image = RegionImage.create(region_id=region.name, image=ContentFile(b"../../media/countries/"))
         city = City.objects.create(name='Бишкек',
                                    region=region)
+        city_image = RegionImage.create(city_id=city.name, image=ContentFile(b"../../media/countries/"))
         Accommodation.objects.create()
 
     def test_get(self):
