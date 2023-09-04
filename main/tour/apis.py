@@ -15,14 +15,14 @@ class LocationSerializer(serializers.ModelSerializer):
 
 
 class AccommodationSerializer(serializers.ModelSerializer):
-    rating = serializers.DecimalField(max_digits=3, decimal_places=2, read_only=True)
+    # rating = serializers.DecimalField(max_digits=3, decimal_places=2, read_only=True)
     # city = serializers.CharField()
     # location = serializers.CharField()
 
     class Meta:
-        model = Accommodation
-        fields = ('name', 'description', 'address', 'city', 'location', 'rating')
+        model = AccommodationRating
+        fields = ('target_content_type',)
 
-    def get_rating(self, instance):
-        print(instance)
-        return AccommodationRating.objects.get(pk=instance.pk)
+    # def get_rating(self, instance):
+    #     print(instance)
+    #     return AccommodationRating.objects.get(pk=instance.pk)

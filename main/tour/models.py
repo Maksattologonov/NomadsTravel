@@ -57,7 +57,7 @@ class AccommodationRating(models.Model):
     total_ratings = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"Rating for {self.target_content_type.model} {self.target_object_id}"
+        return f"Rating for {self.target_content_type.name} {self.target_object_id}"
 
     class Meta:
         verbose_name = 'Рейтинг'
