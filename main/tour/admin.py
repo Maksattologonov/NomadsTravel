@@ -49,6 +49,6 @@ class LocationAdmin(ModelAdmin):
     geomap_default_zoom = '5'
 
 
-@admin.register(RatingAccommodation)
-class RatingAccommodationAdmin(admin.ModelAdmin):
+@admin.register(AccommodationRating)
+class AccommodationRatingAdmin(admin.ModelAdmin):
     pass

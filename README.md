@@ -20,7 +20,7 @@ Before you begin, ensure you have met the following requirements:
 - Python 3.8 or higher
 - Pandas library
 
-You need to activate env and install requirements via using pip:
+You need to activate env and via using pip:
 
 ```bash
 python3 -m venv venv

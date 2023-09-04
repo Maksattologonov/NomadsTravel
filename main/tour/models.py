@@ -34,22 +34,10 @@ class Location(models.Model, GeoItem):
         verbose_name_plural = 'Локации'
 
 
-class RatingAccommodation(models.Model):
-    rating = models.PositiveIntegerField(verbose_name=_("Рейтинг"))
-
-    class Meta:
-        verbose_name = 'Рейтинг'
-        verbose_name_plural = 'Рейтинги'
-
-    def __str__(self):
-        return str(self.rating)
-
-
 class Accommodation(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Название отели'))
     description = models.TextField(verbose_name=_('Описание'))
     address = models.CharField(max_length=255, verbose_name=_('Адрес'))
-    rating = models.ForeignKey(RatingAccommodation, on_delete=models.DO_NOTHING, verbose_name=_('Рейтинг'))
     city = models.ForeignKey('City', on_delete=models.DO_NOTHING, max_length=255, verbose_name=_('Город'))
     location = models.ForeignKey(Location, on_delete=models.DO_NOTHING, max_length=255, verbose_name=_('Локация'))
 
@@ -60,6 +48,20 @@ class Accommodation(models.Model):
         db_table = 'accommodations'
         verbose_name = 'Отель'
         verbose_name_plural = 'Отели'
+
+
+class AccommodationRating(models.Model):
+    target_content_type = models.ForeignKey(Accommodation, on_delete=models.CASCADE, verbose_name=_('Отель'))
+    target_object_id = models.PositiveIntegerField()
+    rating_value = models.PositiveIntegerField(default=0)
+    total_ratings = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"Rating for {self.target_content_type.model} {self.target_object_id}"
+
+    class Meta:
+        verbose_name = 'Рейтинг'
+        verbose_name_plural = 'Рейтинги'
 
 
 class AccommodationImage(models.Model):
