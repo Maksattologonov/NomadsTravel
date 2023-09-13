@@ -52,12 +52,11 @@ class Accommodation(models.Model):
 
 class AccommodationRating(models.Model):
     target_content_type = models.ForeignKey(Accommodation, on_delete=models.CASCADE, verbose_name=_('Отель'))
-    target_object_id = models.PositiveIntegerField()
     rating_value = models.PositiveIntegerField(default=0)
     total_ratings = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"Rating for {self.target_content_type.name} {self.target_object_id}"
+        return f"Рейтинг {self.target_content_type.name}"
 
     class Meta:
         verbose_name = 'Рейтинг'

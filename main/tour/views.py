@@ -15,3 +15,5 @@ class HotelAPIView(APIView):
         queryset = AccommodationService.get()
         serializer = AccommodationSerializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+

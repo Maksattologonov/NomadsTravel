@@ -10,6 +10,6 @@ class AccommodationService:
     @classmethod
     def get(cls, **filters):
         try:
-            return cls.rating.objects.select_related('target_content_type')
+            return cls.model.objects.select_related('city').select_related('location')
         except cls.model.DoesNotExist:
             raise ObjectNotFoundException("Hotels not found")
