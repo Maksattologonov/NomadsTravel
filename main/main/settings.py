@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'debug_toolbar',
     'rest_framework',
+    'user',
     'tour',
     'django_admin_geomap'
 ]
@@ -141,11 +142,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
-    ]
+    ],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 CSRF_TRUSTED_ORIGINS = ["https://90e0-185-53-230-241.ngrok-free.app",
                         "https://www.90e0-185-53-230-241.ngrok-free.app"]
+
+
+AUTH_USER_MODEL = 'user.CustomUser'
 
 
 INTERNAL_IPS = [

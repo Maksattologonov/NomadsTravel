@@ -1,12 +1,24 @@
 from django.db.models import Avg
 from rest_framework import serializers
-from .models import Accommodation, City, Location, AccommodationRating
+from .models import Accommodation, City, Location, AccommodationRating, Region, CityImage
+
+
+class RegionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Region
+        fields = ('id', 'name')
 
 
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = ('id', 'name')
+
+
+class CityImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CityImage
+        fields = ('image',)
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -33,3 +45,13 @@ class AccommodationSerializer(serializers.ModelSerializer):
             return total_ratings if total_ratings is not None else 0
         except Exception as e:
             return 0
+
+
+class GetCitySerializer(serializers.ModelSerializer):
+    location = LocationSerializer()
+    region = RegionSerializer()
+    # images = CityImagesSerializer()
+
+    class Meta:
+        model = City
+        fields = ('id', 'name', 'region', 'location',)

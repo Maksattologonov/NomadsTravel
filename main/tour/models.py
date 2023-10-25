@@ -1,37 +1,10 @@
-from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django_admin_geomap import GeoItem
 
-
-class Location(models.Model, GeoItem):
-    name = models.CharField(max_length=100, verbose_name=_("Название локации"))
-    lon = models.FloatField(verbose_name=_("Долгота"))
-    lat = models.FloatField(verbose_name=_("Широта"))
-
-    @property
-    def geomap_longitude(self):
-        return str(self.lon)
-
-    @property
-    def geomap_latitude(self):
-        return str(self.lat)
-
-    @property
-    def geomap_popup_view(self):
-        return "<strong>{}</strong>".format(str(self))
-
-    @property
-    def geomap_popup_edit(self):
-        return self.geomap_popup_view
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = 'locations'
-        verbose_name = 'Локация'
-        verbose_name_plural = 'Локации'
+from categories.models import Category
+from user.models import CustomUser
+from .managers import Location
 
 
 class Accommodation(models.Model):
@@ -147,7 +120,7 @@ class Country(models.Model):
 
 
 class CountryImage(models.Model):
-    Country_id = models.ForeignKey('Country', on_delete=models.DO_NOTHING, verbose_name=_('Страна'))
+    country_id = models.ForeignKey('Country', on_delete=models.DO_NOTHING, verbose_name=_('Страна'))
     image = models.ImageField(upload_to='countries', verbose_name=_("Загрузить изображение"))
 
     def __str__(self):
@@ -157,3 +130,104 @@ class CountryImage(models.Model):
         db_table = 'country_images'
         verbose_name = 'Изображение страны'
         verbose_name_plural = 'Изображение стран'
+
+
+class TypeOfTour(models.Model):
+    type = models.CharField(max_length=100, verbose_name=_("Тип"))
+
+    def __str__(self):
+        return self.type
+
+    class Meta:
+        db_table = "type_of tour"
+        verbose_name = 'Тип Тура'
+        verbose_name_plural = 'Типы Туров'
+
+
+class DestinationImages(models.Model):
+    destination_id = models.ForeignKey('Destination', on_delete=models.DO_NOTHING, verbose_name=_('Страна'))
+    image = models.ImageField(upload_to='destination/', verbose_name=_("Загрузить изображение"))
+
+    def __str__(self):
+        return str(self.image)
+
+    class Meta:
+        db_table = 'destination_images'
+        verbose_name = 'Изображение пункта'
+        verbose_name_plural = 'Изображение пунктов'
+
+
+class Destination(models.Model):
+    title = models.CharField(max_length=255, verbose_name=_('Название'))
+    description = models.TextField(verbose_name=_("Описание"))
+    main_image = models.ImageField(upload_to='destination/', verbose_name=_("Главное изображение"))
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, verbose_name=_("Локация"))
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, verbose_name=_("Регион"))
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name=_("Категория"))
+    weather = models.CharField(verbose_name=_("Погода"), max_length=255)
+
+    def __str__(self):
+        return str(self.title)
+
+    class Meta:
+        db_table = 'destination'
+        verbose_name = 'Пункт'
+        verbose_name_plural = 'Пункты'
+
+
+class Tour(models.Model):
+    TOUR_LEVEL = [
+        {"Easy": "easy"},
+        {"Medium": "medium"},
+        {"Hard": "hard"},
+    ]
+
+    title = models.CharField(max_length=255, verbose_name=_('Название тура'))
+    price = models.PositiveIntegerField(verbose_name=_("Цена"))
+    description = models.TextField(verbose_name=_("Описание"))
+    date_start = models.DateTimeField(verbose_name=_("Дата начала"))
+    duration_date = models.CharField(max_length=255, verbose_name=_("Длительность"))
+    destinations = models.ManyToManyField(to=Destination, verbose_name=_("Пункты"))
+    level = models.CharField(choices=TOUR_LEVEL, verbose_name=_("Сложность"))
+    type_of = models.ForeignKey(TypeOfTour, on_delete=models.CASCADE, verbose_name=_("Сложность"))
+    distance = models.FloatField(verbose_name=_("Дистанция"))
+    altitude = models.CharField(max_length=255, verbose_name=_("Перепад высоты"))
+
+
+class TourComment(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name=_("Пользователь"))
+    tour_id = models.ForeignKey(Tour, verbose_name=_('Тур'), on_delete=models.CASCADE)
+    text = models.TextField()
+    parent_comment = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Comment by {self.user} on {self.created_at}'
+
+
+class TourCommentPhotos(models.Model):
+    comment_id = models.ForeignKey(TourComment, on_delete=models.DO_NOTHING, verbose_name=_('Комментарий'))
+    image = models.ImageField(upload_to='commentImages', verbose_name=_("Загрузить изображение"))
+
+    def __str__(self):
+        return str(self.image)
+
+    class Meta:
+        db_table = 'comment_images'
+        verbose_name = 'Изображение комментария'
+        verbose_name_plural = 'Изображение комментариев'
+
+
+class TourRating(models.Model):
+    tour_id = models.ForeignKey(Tour, verbose_name=_("Тур"), on_delete=models.CASCADE)
+    rating = models.PositiveSmallIntegerField(verbose_name=_("Рейтинг"),
+                                              validators=[MinValueValidator(1), MaxValueValidator(5)])
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name=_("Пользователь"))
+
+    def __str__(self):
+        return f"{self.tour_id}, Пользователь: {self.user.name}, Рейтиинг: {self.rating}"
+
+    class Meta:
+        db_table = 'tour_rating'
+        verbose_name = 'Рейтинг тура'
+        verbose_name_plural = 'Рейтинги туров'
