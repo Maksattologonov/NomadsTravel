@@ -2,7 +2,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from categories.models import Category
+from categories.models import Category, Health, Visa, Gear, Includes, Excludes, Meal, Entertainment
 from user.models import CustomUser
 from .managers import Location
 
@@ -177,9 +177,9 @@ class Destination(models.Model):
 
 class Tour(models.Model):
     TOUR_LEVEL = [
-        {"Easy": "easy"},
-        {"Medium": "medium"},
-        {"Hard": "hard"},
+        ("Easy", "easy"),
+        ("Medium", "medium"),
+        ("Hard", "hard"),
     ]
 
     title = models.CharField(max_length=255, verbose_name=_('Название тура'))
@@ -189,9 +189,42 @@ class Tour(models.Model):
     duration_date = models.CharField(max_length=255, verbose_name=_("Длительность"))
     destinations = models.ManyToManyField(to=Destination, verbose_name=_("Пункты"))
     level = models.CharField(choices=TOUR_LEVEL, verbose_name=_("Сложность"))
-    type_of = models.ForeignKey(TypeOfTour, on_delete=models.CASCADE, verbose_name=_("Сложность"))
+    type_of = models.ForeignKey(TypeOfTour, on_delete=models.DO_NOTHING, verbose_name=_("Сложность"))
     distance = models.FloatField(verbose_name=_("Дистанция"))
     altitude = models.CharField(max_length=255, verbose_name=_("Перепад высоты"))
+    visa_information = models.ForeignKey(Visa, on_delete=models.DO_NOTHING,
+                                         verbose_name=_("Информация о визе"))
+    health_information = models.ForeignKey(Health, on_delete=models.DO_NOTHING,
+                                           verbose_name=_("Информация о здоровье"))
+    weather = models.CharField(verbose_name=_("Погода"), max_length=255)
+    notes = models.TextField(verbose_name=_("Примечания"))
+    video = models.URLField(verbose_name=_("Ссылка на видео"))
+    main_image = models.ImageField(upload_to="tour/", verbose_name=_("Главное изображение"))
+    personal_gear = models.ForeignKey(Gear, on_delete=models.DO_NOTHING, verbose_name=_("Снаряжение"))
+    includes = models.ForeignKey(Includes, on_delete=models.DO_NOTHING, verbose_name=_("Включения"))
+    excludes = models.ForeignKey(Excludes, on_delete=models.DO_NOTHING, verbose_name=_("Исключения"))
+
+
+class TourPhotos(models.Model):
+    tour_id = models.ForeignKey(Tour, on_delete=models.CASCADE, verbose_name=_('Тур'))
+    image = models.ImageField(upload_to='commentImages', verbose_name=_("Загрузить изображение"))
+
+    def __str__(self):
+        return str(self.image)
+
+    class Meta:
+        db_table = 'tour_images'
+        verbose_name = 'Изображение'
+        verbose_name_plural = 'Изображения'
+
+
+class Itinerary(models.Model):
+    tour_id = models.ForeignKey(Tour, on_delete=models.CASCADE, verbose_name=_('Тур'))
+    date = models.DateField(verbose_name=_("Дата"), null=False)
+    title = models.CharField(verbose_name=_("Заголовок"), max_length=255)
+    meals = models.ForeignKey(Meal, on_delete=models.DO_NOTHING, verbose_name=_("Еда"))
+    accommodation = models.ForeignKey(Accommodation, on_delete=models.DO_NOTHING, verbose_name=_("Проживание"))
+    entertainment = models.ForeignKey(Entertainment, on_delete=models.DO_NOTHING, verbose_name=_("Развлечения"))
 
 
 class TourComment(models.Model):

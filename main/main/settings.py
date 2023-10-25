@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'user',
     'tour',
+    'categories',
     'django_admin_geomap'
 ]
 
