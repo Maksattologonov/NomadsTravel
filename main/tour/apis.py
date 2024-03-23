@@ -1,6 +1,6 @@
 from django.db.models import Avg
 from rest_framework import serializers
-from .models import Accommodation, City, Location, AccommodationRating, Region, CityImage
+from .models import Accommodation, City, Location, AccommodationRating, Region, CityImage, Destination
 
 
 class RegionSerializer(serializers.ModelSerializer):
@@ -55,3 +55,16 @@ class GetCitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = ('id', 'name', 'region', 'location',)
+
+
+class DestinationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Destination
+        fields = '__all__'
+
+
+class DestinationsTitleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Destination
+        fields = ['title', 'main_image']
+

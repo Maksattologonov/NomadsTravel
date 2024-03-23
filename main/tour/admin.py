@@ -52,3 +52,13 @@ class LocationAdmin(ModelAdmin):
 @admin.register(AccommodationRating)
 class AccommodationRatingAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(Destination)
+class DestinationAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    pass
