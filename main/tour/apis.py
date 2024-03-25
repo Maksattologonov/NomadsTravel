@@ -66,5 +66,5 @@ class DestinationsSerializer(serializers.ModelSerializer):
 class DestinationsTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Destination
-        fields = ['title', 'main_image']
+        fields = ('title', 'main_image')
 

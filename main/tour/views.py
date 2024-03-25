@@ -5,7 +5,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from common.schemas.tour import AccommodationSchema, CitySchema
+from common.schemas.tour import AccommodationSchema, CitySchema, DestinationSchema
 from .apis import AccommodationSerializer, GetCitySerializer, DestinationsSerializer, DestinationsTitleSerializer
 from .services import AccommodationService, CityService, DestinationService
 
@@ -42,12 +42,13 @@ class CityAPIView(APIView):
 
 class DestinationsAPIView(APIView):
     permission_classes = [AllowAny]
-
-    # schema = ()
+    schema = DestinationSchema()
 
     def get(self, request):
         if request.GET.get('title'):
             queryset = DestinationService.get(title=request.GET.get('title'))
+        elif self.request.GET.get('category'):
+            queryset = DestinationService.get(category=self.request.GET.get('category'))
         else:
             queryset = DestinationService.get()
         serializer = DestinationsSerializer(queryset, many=True)

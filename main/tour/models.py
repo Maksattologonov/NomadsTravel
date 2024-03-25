@@ -188,7 +188,7 @@ class Tour(models.Model):
     date_start = models.DateTimeField(verbose_name=_("Дата начала"))
     duration_date = models.CharField(max_length=255, verbose_name=_("Длительность"))
     destinations = models.ManyToManyField(to=Destination, verbose_name=_("Пункты"))
-    level = models.CharField(choices=TOUR_LEVEL, verbose_name=_("Сложность"))
+    level = models.CharField(choices=TOUR_LEVEL, max_length=25, verbose_name=_("Сложность"))
     type_of = models.ForeignKey(TypeOfTour, on_delete=models.DO_NOTHING, verbose_name=_("Сложность"))
     distance = models.FloatField(verbose_name=_("Дистанция"))
     altitude = models.CharField(max_length=255, verbose_name=_("Перепад высоты"))
@@ -203,6 +203,14 @@ class Tour(models.Model):
     personal_gear = models.ForeignKey(Gear, on_delete=models.DO_NOTHING, verbose_name=_("Снаряжение"))
     includes = models.ForeignKey(Includes, on_delete=models.DO_NOTHING, verbose_name=_("Включения"))
     excludes = models.ForeignKey(Excludes, on_delete=models.DO_NOTHING, verbose_name=_("Исключения"))
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        db_table = "tour"
+        verbose_name = _("Тур")
+        verbose_name_plural = _("Туры")
 
 
 class TourPhotos(models.Model):

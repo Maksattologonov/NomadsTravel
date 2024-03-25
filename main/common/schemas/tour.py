@@ -27,3 +27,16 @@ class CitySchema(AutoSchema):
                               schema=coreschema.String(description='str (name)')),
             ]
         return self._manual_fields + api_fields
+
+
+class DestinationSchema(AutoSchema):
+    def get_manual_fields(self, path, method):
+        api_fields = []
+        if method == 'GET':
+            api_fields = [
+                coreapi.Field(name='title', required=False, location='path',
+                              schema=coreschema.String(description='str (title)'), ),
+                coreapi.Field(name='category', required=False, location='path',
+                              schema=coreschema.String(description='str (category)')),
+            ]
+            return self._manual_fields + api_fields

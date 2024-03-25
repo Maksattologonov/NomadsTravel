@@ -79,17 +79,23 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config("POSTGRES_DB"),
+#         'USER': config("POSTGRES_USER"),
+#         'PASSWORD': config("POSTGRES_PASSWORD"),
+#         'HOST': 'localhost',
+#         'PORT': 5432,
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config("POSTGRES_DB"),
-        'USER': config("POSTGRES_USER"),
-        'PASSWORD': config("POSTGRES_PASSWORD"),
-        'HOST': 'localhost',
-        'PORT': 5432,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'sqlite'
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -145,14 +151,13 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
     ],
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
 CSRF_TRUSTED_ORIGINS = ["https://90e0-185-53-230-241.ngrok-free.app",
                         "https://www.90e0-185-53-230-241.ngrok-free.app"]
 
-
 AUTH_USER_MODEL = 'user.CustomUser'
-
 
 INTERNAL_IPS = [
     '127.0.0.1'
