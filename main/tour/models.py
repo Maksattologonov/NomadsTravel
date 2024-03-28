@@ -13,6 +13,7 @@ class Accommodation(models.Model):
     address = models.CharField(max_length=255, verbose_name=_('Адрес'))
     city = models.ForeignKey('City', on_delete=models.DO_NOTHING, max_length=255, verbose_name=_('Город'))
     location = models.ForeignKey(Location, on_delete=models.DO_NOTHING, max_length=255, verbose_name=_('Локация'))
+    price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_('Цена'))
 
     def __str__(self):
         return self.name
@@ -21,6 +22,23 @@ class Accommodation(models.Model):
         db_table = 'accommodations'
         verbose_name = 'Отель'
         verbose_name_plural = 'Отели'
+
+
+class Booking(models.Model):
+    BOOK_STATUS = [
+        ('paid', 'paid'),
+        ('booked', 'booked'),
+        ('conditionally', 'conditionally'),
+    ]
+    accommodation = models.ForeignKey(Accommodation, on_delete=models.CASCADE, related_name='bookings', verbose_name=_('Размещение'))
+    # user = models.ForeignKey('User', on_delete=models.CASCADE, verbose_name=_('Пользователь'))
+    check_in = models.DateField(verbose_name=_('Дата заезда'))
+    check_out = models.DateField(verbose_name=_('Дата выезда'))
+    status = models.CharField(max_length=13, choices=BOOK_STATUS, verbose_name=_('Статус'))
+
+    class Meta:
+        verbose_name = _('Бронирование')
+        verbose_name_plural = _('Бронирования')
 
 
 class AccommodationRating(models.Model):
