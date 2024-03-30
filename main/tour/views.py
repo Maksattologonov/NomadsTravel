@@ -5,9 +5,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from common.schemas.tour import AccommodationSchema, CitySchema, DestinationSchema
-from .apis import AccommodationSerializer, GetCitySerializer, DestinationsSerializer, DestinationsTitleSerializer
-from .services import AccommodationService, CityService, DestinationService
+from common.schemas.tour import AccommodationSchema, CitySchema, DestinationSchema, TourSchema
+from .apis import AccommodationSerializer, GetCitySerializer, DestinationsSerializer, DestinationsTitleSerializer, \
+    TourSerializer
+from .services import AccommodationService, CityService, DestinationService, TourService
 
 
 class HotelAPIView(APIView):
@@ -57,8 +58,19 @@ class DestinationsAPIView(APIView):
 
 class DestinationsTitleAPIView(APIView):
     permission_classes = [AllowAny]
+    schema = DestinationSchema()
 
     def get(self, request):
         queryset = DestinationService.get_title()
         serializer = DestinationsTitleSerializer(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class ToursAPIView(APIView):
+    permission_classes = [AllowAny]
+    schema = TourSchema()
+
+    def get(self, request):
+        queryset = TourService.get()
+        serializer = TourSerializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)

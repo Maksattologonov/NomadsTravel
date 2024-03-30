@@ -1,6 +1,8 @@
 from django.db.models import Avg
 from rest_framework import serializers
-from .models import Accommodation, City, Location, AccommodationRating, Region, CityImage, Destination
+
+from categories.models import Visa, Health, Gear, Includes, Excludes
+from .models import Accommodation, City, Location, AccommodationRating, Region, CityImage, Destination, Tour, TypeOfTour
 
 
 class RegionSerializer(serializers.ModelSerializer):
@@ -50,6 +52,7 @@ class AccommodationSerializer(serializers.ModelSerializer):
 class GetCitySerializer(serializers.ModelSerializer):
     location = LocationSerializer()
     region = RegionSerializer()
+
     # images = CityImagesSerializer()
 
     class Meta:
@@ -68,3 +71,51 @@ class DestinationsTitleSerializer(serializers.ModelSerializer):
         model = Destination
         fields = ('title', 'main_image')
 
+
+class TypeOfTourSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TypeOfTour
+        fields = "__all__"
+
+
+class VisaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Visa
+        fields = "__all__"
+
+
+class HealthSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Health
+        fields = "__all__"
+
+
+class GearSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Gear
+        fields = "__all__"
+
+
+class IncludesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Includes
+        fields = "__all__"
+
+
+class ExcludesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Excludes
+        fields = "__all__"
+
+
+class TourSerializer(serializers.ModelSerializer):
+    destinations = DestinationsSerializer(many=True)
+    type_of = TypeOfTourSerializer(many=True)
+    visa_information = VisaSerializer(many=True)
+    health_information = HealthSerializer(many=True)
+    includes = IncludesSerializer(many=True)
+    excludes = ExcludesSerializer(many=True)
+
+    class Meta:
+        model = Tour
+        fields = "__all__"

@@ -30,7 +30,8 @@ class Booking(models.Model):
         ('booked', 'booked'),
         ('conditionally', 'conditionally'),
     ]
-    accommodation = models.ForeignKey(Accommodation, on_delete=models.CASCADE, related_name='bookings', verbose_name=_('Размещение'))
+    accommodation = models.ForeignKey(Accommodation, on_delete=models.CASCADE, related_name='bookings',
+                                      verbose_name=_('Размещение'))
     # user = models.ForeignKey('User', on_delete=models.CASCADE, verbose_name=_('Пользователь'))
     check_in = models.DateField(verbose_name=_('Дата заезда'))
     check_out = models.DateField(verbose_name=_('Дата выезда'))
@@ -206,21 +207,23 @@ class Tour(models.Model):
     date_start = models.DateTimeField(verbose_name=_("Дата начала"))
     duration_date = models.CharField(max_length=255, verbose_name=_("Длительность"))
     destinations = models.ManyToManyField(to=Destination, verbose_name=_("Пункты"))
-    level = models.CharField(choices=TOUR_LEVEL, max_length=25, verbose_name=_("Сложность"))
-    type_of = models.ForeignKey(TypeOfTour, on_delete=models.DO_NOTHING, verbose_name=_("Сложность"))
+    # level = models.CharField(choices=TOUR_LEVEL, max_length=25, verbose_name=_("Сложность"))
+    type_of = models.ManyToManyField(to=TypeOfTour, verbose_name=_("Сложность"))
     distance = models.FloatField(verbose_name=_("Дистанция"))
     altitude = models.CharField(max_length=255, verbose_name=_("Перепад высоты"))
-    visa_information = models.ForeignKey(Visa, on_delete=models.DO_NOTHING,
-                                         verbose_name=_("Информация о визе"))
-    health_information = models.ForeignKey(Health, on_delete=models.DO_NOTHING,
-                                           verbose_name=_("Информация о здоровье"))
+    visa_information = models.ManyToManyField(to=Visa,
+                                              verbose_name=_("Информация о визе"))
+    health_information = models.ManyToManyField(to=Health,
+                                                verbose_name=_("Информация о здоровье"))
     weather = models.CharField(verbose_name=_("Погода"), max_length=255)
     notes = models.TextField(verbose_name=_("Примечания"))
     video = models.URLField(verbose_name=_("Ссылка на видео"))
     main_image = models.ImageField(upload_to="tour/", verbose_name=_("Главное изображение"))
-    personal_gear = models.ForeignKey(Gear, on_delete=models.DO_NOTHING, verbose_name=_("Снаряжение"))
-    includes = models.ForeignKey(Includes, on_delete=models.DO_NOTHING, verbose_name=_("Включения"))
-    excludes = models.ForeignKey(Excludes, on_delete=models.DO_NOTHING, verbose_name=_("Исключения"))
+    personal_gear = models.ManyToManyField(to=Gear, verbose_name=_("Снаряжение"))
+    includes = models.ManyToManyField(to=Includes, verbose_name=_("Включения"))
+    excludes = models.ManyToManyField(to=Excludes, verbose_name=_("Исключения"))
+    geomap_latitude = models.CharField(verbose_name=_("Широта"), max_length=255, null=True, blank=True)
+    geomap_longitude = models.CharField(verbose_name=_("Долгота"), max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -252,6 +255,14 @@ class Itinerary(models.Model):
     accommodation = models.ForeignKey(Accommodation, on_delete=models.DO_NOTHING, verbose_name=_("Проживание"))
     entertainment = models.ForeignKey(Entertainment, on_delete=models.DO_NOTHING, verbose_name=_("Развлечения"))
 
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        db_table = 'itinerary'
+        verbose_name = _('Маршрут')
+        verbose_name_plural = _('Маршруты')
+
 
 class TourComment(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name=_("Пользователь"))
@@ -262,6 +273,11 @@ class TourComment(models.Model):
 
     def __str__(self):
         return f'Comment by {self.user} on {self.created_at}'
+
+    class Meta:
+        db_table = 'tour_comments'
+        verbose_name = _("Комментарий к туру")
+        verbose_name_plural = _("Комментарии к туру")
 
 
 class TourCommentPhotos(models.Model):

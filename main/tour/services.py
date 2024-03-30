@@ -1,4 +1,4 @@
-from .models import Accommodation, AccommodationRating, City, Destination
+from .models import Accommodation, AccommodationRating, City, Destination, Tour
 
 from common.exceptions import ObjectNotFoundException
 
@@ -42,3 +42,14 @@ class DestinationService:
             return cls.model.objects.values('title', 'main_image')
         except cls.model.DoesNotExist:
             raise ObjectNotFoundException('Destination not found')
+
+
+class TourService:
+    model = Tour
+
+    @classmethod
+    def get(cls, **filters):
+        try:
+            return cls.model.objects.filter(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Tour not found')

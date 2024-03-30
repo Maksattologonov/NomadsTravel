@@ -9,7 +9,7 @@ class AccommodationImageInline(admin.TabularInline):
 
 @admin.register(Accommodation)
 class AccommodationAdmin(admin.ModelAdmin):
-    inlines = [AccommodationImageInline,]
+    inlines = [AccommodationImageInline, ]
 
 
 class CityImageInlineAdmin(admin.TabularInline):
@@ -59,6 +59,21 @@ class DestinationAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+@admin.register(Tour)
+class TourAdmin(ModelAdmin):
+    pass
+
+
+@admin.register(TourComment)
+class TourCommentAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(TourRating)
+class TourRatingAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(TypeOfTour)
+class TypeOfTourAdmin(admin.ModelAdmin):
     pass
