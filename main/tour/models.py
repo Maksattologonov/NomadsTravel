@@ -183,7 +183,9 @@ class Destination(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE, verbose_name=_("Локация"))
     region = models.ForeignKey(Region, on_delete=models.CASCADE, verbose_name=_("Регион"))
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name=_("Категория"))
+    activities = models.ManyToManyField('Activity', verbose_name=_('Активности'))
     weather = models.CharField(verbose_name=_("Погода"), max_length=255)
+    active = models.BooleanField(verbose_name=_('Активность'), default=True)
 
     def __str__(self):
         return str(self.title)
@@ -192,6 +194,19 @@ class Destination(models.Model):
         db_table = 'destination'
         verbose_name = 'Пункт'
         verbose_name_plural = 'Пункты'
+
+
+class DestinationRating(models.Model):
+    destination_id = models.ForeignKey('Destination',  related_name='ratings', on_delete=models.CASCADE)
+    value = models.FloatField(verbose_name=_('Рейтинг'))
+
+    def __str__(self):
+        return self.destination_id.name + str(self.value)
+
+    class Meta:
+        db_table = 'destination_rating'
+        verbose_name = 'Рейтинг пункта'
+        verbose_name_plural = 'Рейтинги пунктов'
 
 
 class Tour(models.Model):
@@ -203,6 +218,7 @@ class Tour(models.Model):
 
     title = models.CharField(max_length=255, verbose_name=_('Название тура'))
     price = models.PositiveIntegerField(verbose_name=_("Цена"))
+    short_description = models.TextField(verbose_name=_('Краткое описание'))
     description = models.TextField(verbose_name=_("Описание"))
     date_start = models.DateTimeField(verbose_name=_("Дата начала"))
     duration_date = models.CharField(max_length=255, verbose_name=_("Длительность"))
@@ -306,3 +322,15 @@ class TourRating(models.Model):
         db_table = 'tour_rating'
         verbose_name = 'Рейтинг тура'
         verbose_name_plural = 'Рейтинги туров'
+
+
+class Activity(models.Model):
+    name = models.CharField(verbose_name=_("Активности"), max_length=255)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'activity'
+        verbose_name = 'Активность'
+        verbose_name_plural = 'Активности'

@@ -2,7 +2,8 @@ from django.db.models import Avg
 from rest_framework import serializers
 
 from categories.models import Visa, Health, Gear, Includes, Excludes
-from .models import Accommodation, City, Location, AccommodationRating, Region, CityImage, Destination, Tour, TypeOfTour
+from .models import Accommodation, City, Location, AccommodationRating, Region, CityImage, Destination, Tour, \
+    TypeOfTour, DestinationRating
 
 
 class RegionSerializer(serializers.ModelSerializer):
@@ -60,10 +61,26 @@ class GetCitySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'region', 'location',)
 
 
+class DestinationRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DestinationRating
+        fields = ('value',)
+
+
 class DestinationsSerializer(serializers.ModelSerializer):
+    coordinates = serializers.SerializerMethodField()
+    ratings = serializers.SerializerMethodField()
+
     class Meta:
         model = Destination
-        fields = '__all__'
+        fields = ('title', 'main_image', 'ratings', 'active', 'coordinates')
+
+    def get_coordinates(self, obj):
+        return {'longitude': obj.location.lon, 'latitude': obj.location.lat}
+
+    def get_ratings(self, obj):
+        ratings = DestinationRating.objects.filter(destination_id=obj)
+        return [rating.value for rating in ratings]
 
 
 class DestinationsTitleSerializer(serializers.ModelSerializer):
@@ -119,3 +136,6 @@ class TourSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tour
         fields = "__all__"
+
+    def get_coordinates(self, obj):
+        return {'longitude': obj.longitude, 'latitude': obj.latitude}
