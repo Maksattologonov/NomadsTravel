@@ -53,3 +53,16 @@ class TourSchema(AutoSchema):
                               schema=coreschema.String(description='str (category)')),
             ]
             return self._manual_fields + api_fields
+
+
+class DestinationRatingSchema(AutoSchema):
+    def get_manual_fields(self, path, method):
+        api_fields = []
+        if method == 'POST':
+            api_fields = [
+                coreapi.Field(name='destination_id', required=False, location='form',
+                              schema=coreschema.String(description='int (id)'), ),
+                coreapi.Field(name='value', required=False, location='form',
+                              schema=coreschema.String(description='decimal (value)')),
+            ]
+            return self._manual_fields + api_fields

@@ -67,6 +67,12 @@ class DestinationRatingSerializer(serializers.ModelSerializer):
         fields = ('value',)
 
 
+class DestinationRatingCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DestinationRating
+        fields = '__all__'
+
+
 class DestinationsSerializer(serializers.ModelSerializer):
     coordinates = serializers.SerializerMethodField()
     ratings = serializers.SerializerMethodField()

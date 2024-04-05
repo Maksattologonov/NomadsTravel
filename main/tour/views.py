@@ -5,9 +5,9 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from common.schemas.tour import AccommodationSchema, CitySchema, DestinationSchema, TourSchema
+from common.schemas.tour import AccommodationSchema, CitySchema, DestinationSchema, TourSchema, DestinationRatingSchema
 from .apis import AccommodationSerializer, GetCitySerializer, DestinationsSerializer, DestinationsTitleSerializer, \
-    TourSerializer
+    TourSerializer, DestinationRatingSerializer, DestinationRatingCreateSerializer
 from .services import AccommodationService, CityService, DestinationService, TourService
 
 
@@ -75,3 +75,14 @@ class ToursAPIView(APIView):
         serializer = TourSerializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+
+class DestinationRatingAPIView(APIView):
+    permission_classes = [AllowAny]
+    schema = DestinationRatingSchema()
+
+    def post(self, request):
+        serializer = DestinationRatingCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Destination Rating Created", status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -201,7 +201,7 @@ class DestinationRating(models.Model):
     value = models.FloatField(verbose_name=_('Рейтинг'))
 
     def __str__(self):
-        return self.destination_id.name + str(self.value)
+        return self.destination_id.title + str(self.value)
 
     class Meta:
         db_table = 'destination_rating'
