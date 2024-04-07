@@ -87,8 +87,8 @@ class Meal(models.Model):
 
     class Meta:
         db_table = "meal"
-        verbose_name = "Еда"
-        verbose_name_plural = "Еды"
+        verbose_name = "Блюдо"
+        verbose_name_plural = "Блюда"
 
 
 class Entertainment(models.Model):

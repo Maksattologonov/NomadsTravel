@@ -154,8 +154,8 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
-CSRF_TRUSTED_ORIGINS = ["https://90e0-185-53-230-241.ngrok-free.app",
-                        "https://www.90e0-185-53-230-241.ngrok-free.app"]
+CSRF_TRUSTED_ORIGINS = ["https://8a75-92-62-70-33.ngrok-free.app",
+                        "http://8a75-92-62-70-33.ngrok-free.app"]
 
 AUTH_USER_MODEL = 'user.CustomUser'
 
