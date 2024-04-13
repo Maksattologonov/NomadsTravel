@@ -60,10 +60,59 @@ class GetCitySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'region', 'location',)
 
 
-class DestinationsSerializer(serializers.ModelSerializer):
+class DestinationRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DestinationRating
+        fields = ('value',)
+
+
+class DestinationIDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Destination
+        fields = ('pk',)
+
+
+class DestinationRatingCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DestinationRating
         fields = '__all__'
+
+
+class DestinationSerializer(serializers.ModelSerializer):
+    map_coordinate = serializers.SerializerMethodField()
+    tour = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Destination
+        fields = ('title', 'description', 'activities', 'main_image', 'map_coordinate', 'tour')
+
+    def get_map_coordinate(self, obj):
+        return {obj.location.lon, obj.location.lat}
+
+    def get_tour(self, obj):
+        return [tour.title for tour in obj.tour.all()]
+
+
+class DestinationsSerializer(serializers.ModelSerializer):
+    map_coordinate = serializers.SerializerMethodField()
+    ratings = serializers.SerializerMethodField()
+    region = serializers.StringRelatedField(many=False)
+
+    class Meta:
+        model = Destination
+        fields = ('title', 'main_image', 'ratings', 'active', 'map_coordinate', 'region')
+
+    def get_map_coordinate(self, obj):
+        return {obj.location.lon, obj.location.lat}
+
+    def get_ratings(self, obj):
+        ratings = DestinationRating.objects.filter(destination_id=obj)
+        if ratings:
+            total_rating = sum([rating.value for rating in ratings])
+            average_rating = total_rating / len(ratings)
+            return "{:.2f}".format(average_rating)
+        else:
+            return "0.00"
 
 
 class DestinationsTitleSerializer(serializers.ModelSerializer):

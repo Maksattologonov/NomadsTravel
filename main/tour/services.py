@@ -1,6 +1,8 @@
-from .models import Accommodation, AccommodationRating, City, Destination, Tour
+from django.db import IntegrityError
 
-from common.exceptions import ObjectNotFoundException
+from .models import Accommodation, AccommodationRating, City, Destination, Tour, DestinationRating
+
+from common.exceptions import ObjectNotFoundException, ObjectAlreadyExistsException
 
 
 class AccommodationService:
@@ -32,6 +34,13 @@ class DestinationService:
     @classmethod
     def get(cls, **filters):
         try:
+            return cls.model.objects.filter(id=2).prefetch_related('tour')
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Destination not found')
+
+    @classmethod
+    def filter(cls, **filters):
+        try:
             return cls.model.objects.filter(**filters)
         except cls.model.DoesNotExist:
             raise ObjectNotFoundException('Destination not found')
@@ -53,3 +62,15 @@ class TourService:
             return cls.model.objects.filter(**filters)
         except cls.model.DoesNotExist:
             raise ObjectNotFoundException('Tour not found')
+
+
+class DestinationRouteService:
+    model = DestinationRating
+
+    @classmethod
+    def save_rating(cls, pk: int, value: float):
+        try:
+            obj = cls.model.objects.create(destination=pk, value=value)
+            obj.save()
+        except IntegrityError:
+            raise ObjectAlreadyExistsException("Rating already exists")
