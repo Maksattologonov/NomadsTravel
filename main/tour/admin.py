@@ -82,3 +82,8 @@ class TypeOfTourAdmin(admin.ModelAdmin):
 @admin.register(DestinationRating)
 class DestinationRatingAdmin(ModelAdmin):
     pass
+
+
+@admin.register(Activity)
+class ActivityAdmin(ModelAdmin):
+    pass

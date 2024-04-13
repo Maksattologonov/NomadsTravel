@@ -197,11 +197,11 @@ class Destination(models.Model):
 
 
 class DestinationRating(models.Model):
-    destination_id = models.ForeignKey('Destination',  related_name='ratings', on_delete=models.CASCADE)
-    value = models.FloatField(verbose_name=_('Рейтинг'))
+    destination = models.ForeignKey('Destination',  related_name='ratings', on_delete=models.CASCADE)
+    value = models.DecimalField(verbose_name=_('Рейтинг'), max_digits=2, decimal_places=1)
 
     def __str__(self):
-        return self.destination_id.title + str(self.value)
+        return self.destination.title + str(self.value)
 
     class Meta:
         db_table = 'destination_rating'
@@ -222,7 +222,7 @@ class Tour(models.Model):
     description = models.TextField(verbose_name=_("Описание"))
     date_start = models.DateTimeField(verbose_name=_("Дата начала"))
     duration_date = models.CharField(max_length=255, verbose_name=_("Длительность"))
-    destinations = models.ManyToManyField(to=Destination, verbose_name=_("Пункты"))
+    destinations = models.ManyToManyField(to=Destination, related_name="tour", verbose_name=_("Пункты"))
     # level = models.CharField(choices=TOUR_LEVEL, max_length=25, verbose_name=_("Сложность"))
     type_of = models.ManyToManyField(to=TypeOfTour, verbose_name=_("Сложность"))
     distance = models.FloatField(verbose_name=_("Дистанция"))

@@ -5,10 +5,11 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from common.schemas.tour import AccommodationSchema, CitySchema, DestinationSchema, TourSchema, DestinationRatingSchema
+from common.schemas.tour import AccommodationSchema, CitySchema, DestinationSchema, TourSchema, DestinationRatingSchema, \
+    DestinationsSchema
 from .apis import AccommodationSerializer, GetCitySerializer, DestinationsSerializer, DestinationsTitleSerializer, \
-    TourSerializer, DestinationRatingSerializer, DestinationRatingCreateSerializer
-from .services import AccommodationService, CityService, DestinationService, TourService
+    TourSerializer, DestinationRatingSerializer, DestinationRatingCreateSerializer, DestinationSerializer
+from .services import AccommodationService, CityService, DestinationService, TourService, DestinationRouteService
 
 
 class HotelAPIView(APIView):
@@ -43,16 +44,30 @@ class CityAPIView(APIView):
 
 class DestinationsAPIView(APIView):
     permission_classes = [AllowAny]
-    schema = DestinationSchema()
+    schema = DestinationsSchema()
 
     def get(self, request):
         if request.GET.get('title'):
-            queryset = DestinationService.get(title=request.GET.get('title'))
+            queryset = DestinationService.filter(title=request.GET.get('title'))
         elif self.request.GET.get('category'):
-            queryset = DestinationService.get(category=self.request.GET.get('category'))
+            queryset = DestinationService.filter(category=self.request.GET.get('category'))
         else:
-            queryset = DestinationService.get()
+            queryset = DestinationService.filter()
         serializer = DestinationsSerializer(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class DestinationAPIView(APIView):
+    permission_classes = [AllowAny]
+    schema = DestinationSchema()
+
+    def get(self, request):
+        if request.query_params.get('id'):
+            queryset = DestinationService.get(id=request.query_params.get('id'))
+        else:
+            queryset = DestinationService.get().first()
+        print(queryset)
+        serializer = DestinationSerializer(queryset, many=False)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
@@ -82,7 +97,11 @@ class DestinationRatingAPIView(APIView):
 
     def post(self, request):
         serializer = DestinationRatingCreateSerializer(data=request.data)
+        print(serializer)
         if serializer.is_valid():
-            serializer.save()
+            print(serializer.validated_data)
+            DestinationRouteService.save_rating(pk=serializer.validated_data.get('destination'),
+                                                value=serializer.validated_data.get('value'))
             return Response("Destination Rating Created", status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
