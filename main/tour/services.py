@@ -34,7 +34,7 @@ class DestinationService:
     @classmethod
     def get(cls, **filters):
         try:
-            return cls.model.objects.filter(id=2).prefetch_related('tour')
+            return cls.model.objects.filter(**filters).prefetch_related('tour').prefetch_related('activity')
         except cls.model.DoesNotExist:
             raise ObjectNotFoundException('Destination not found')
 

@@ -2,7 +2,8 @@ from django.db.models import Avg
 from rest_framework import serializers
 
 from categories.models import Visa, Health, Gear, Includes, Excludes
-from .models import Accommodation, City, Location, AccommodationRating, Region, CityImage, Destination, Tour, TypeOfTour
+from .models import Accommodation, City, Location, AccommodationRating, Region, CityImage, Destination, Tour, \
+    TypeOfTour, DestinationRating
 
 
 class RegionSerializer(serializers.ModelSerializer):
@@ -81,16 +82,20 @@ class DestinationRatingCreateSerializer(serializers.ModelSerializer):
 class DestinationSerializer(serializers.ModelSerializer):
     map_coordinate = serializers.SerializerMethodField()
     tour = serializers.SerializerMethodField()
+    activity = serializers.SerializerMethodField()
 
     class Meta:
         model = Destination
-        fields = ('title', 'description', 'activities', 'main_image', 'map_coordinate', 'tour')
+        fields = ('title', 'description', 'main_image', 'map_coordinate', 'activity', 'tour')
 
     def get_map_coordinate(self, obj):
         return {obj.location.lon, obj.location.lat}
 
     def get_tour(self, obj):
-        return [tour.title for tour in obj.tour.all()]
+        return [tour.title for tour in obj.tour.filter()]
+
+    def get_activity(self, obj):
+        return [activity.name for activity in obj.activity.filter()]
 
 
 class DestinationsSerializer(serializers.ModelSerializer):

@@ -64,8 +64,6 @@ class TourSchema(AutoSchema):
                               schema=coreschema.String(description='str (category)')),
             ]
             return self._manual_fields + api_fields
-<<<<<<< HEAD
-=======
 
 
 class DestinationRatingSchema(AutoSchema):
@@ -80,4 +78,3 @@ class DestinationRatingSchema(AutoSchema):
                               schema=coreschema.String(description='decimal (value)')),
             ]
             return self._manual_fields + api_fields
->>>>>>> dd5a201b98df240ea1bee904508b75617b14ba43

@@ -219,7 +219,7 @@ class Tour(models.Model):
     description = models.TextField(verbose_name=_("Описание"))
     date_start = models.DateTimeField(verbose_name=_("Дата начала"))
     duration_date = models.CharField(max_length=255, verbose_name=_("Длительность"))
-    destinations = models.ManyToManyField(to=Destination, related_name="tour", verbose_name=_("Пункты"))
+    destinations = models.ForeignKey(Destination, on_delete=models.CASCADE, related_name="tour", verbose_name=_("Пункты"))
     # level = models.CharField(choices=TOUR_LEVEL, max_length=25, verbose_name=_("Сложность"))
     type_of = models.ManyToManyField(to=TypeOfTour, verbose_name=_("Сложность"))
     distance = models.FloatField(verbose_name=_("Дистанция"))
@@ -235,8 +235,6 @@ class Tour(models.Model):
     personal_gear = models.ManyToManyField(to=Gear, verbose_name=_("Снаряжение"))
     includes = models.ManyToManyField(to=Includes, verbose_name=_("Включения"))
     excludes = models.ManyToManyField(to=Excludes, verbose_name=_("Исключения"))
-    geomap_latitude = models.CharField(verbose_name=_("Широта"), max_length=255, null=True, blank=True)
-    geomap_longitude = models.CharField(verbose_name=_("Долгота"), max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -319,3 +317,16 @@ class TourRating(models.Model):
         db_table = 'tour_rating'
         verbose_name = 'Рейтинг тура'
         verbose_name_plural = 'Рейтинги туров'
+
+
+class Activity(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_("Название"))
+    destination = models.ForeignKey(Destination, related_name='activity', on_delete=models.CASCADE, verbose_name='Пункт')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'activity'
+        verbose_name = 'Активность'
+        verbose_name_plural = 'Активности'

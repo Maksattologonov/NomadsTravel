@@ -64,9 +64,9 @@ class DestinationAPIView(APIView):
         if request.query_params.get('id'):
             queryset = DestinationService.get(id=request.query_params.get('id'))
         else:
-            queryset = DestinationService.get().first()
+            queryset = DestinationService.get(id=1)
         print(queryset)
-        serializer = DestinationSerializer(queryset, many=False)
+        serializer = DestinationSerializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
