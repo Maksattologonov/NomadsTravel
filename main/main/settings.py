@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'user',
     'tour',
     'categories',
+    'accommodation',
     'django_admin_geomap'
 ]
 

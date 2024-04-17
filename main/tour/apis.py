@@ -1,8 +1,9 @@
 from django.db.models import Avg
 from rest_framework import serializers
 
+from accommodation.models import Accommodation, AccommodationRating
 from categories.models import Visa, Health, Gear, Includes, Excludes
-from .models import Accommodation, City, Location, AccommodationRating, Region, CityImage, Destination, Tour, \
+from .models import City, Location, Region, CityImage, Destination, Tour, \
     TypeOfTour, DestinationRating
 
 

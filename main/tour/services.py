@@ -1,6 +1,7 @@
 from django.db import IntegrityError
 
-from .models import Accommodation, AccommodationRating, City, Destination, Tour, DestinationRating
+from accommodation.models import Accommodation, AccommodationRating
+from .models import City, Destination, Tour, DestinationRating
 
 from common.exceptions import ObjectNotFoundException, ObjectAlreadyExistsException
 

@@ -2,26 +2,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from accommodation.models import Accommodation
 from categories.models import Category, Health, Visa, Gear, Includes, Excludes, Meal, Entertainment
 from user.models import CustomUser
 from .managers import Location
-
-
-class Accommodation(models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('Название отели'))
-    description = models.TextField(verbose_name=_('Описание'))
-    address = models.CharField(max_length=255, verbose_name=_('Адрес'))
-    city = models.ForeignKey('City', on_delete=models.DO_NOTHING, max_length=255, verbose_name=_('Город'))
-    location = models.ForeignKey(Location, on_delete=models.DO_NOTHING, max_length=255, verbose_name=_('Локация'))
-    price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_('Цена'))
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = 'accommodations'
-        verbose_name = 'Отель'
-        verbose_name_plural = 'Отели'
 
 
 class Booking(models.Model):
@@ -40,32 +24,6 @@ class Booking(models.Model):
     class Meta:
         verbose_name = _('Бронирование')
         verbose_name_plural = _('Бронирования')
-
-
-class AccommodationRating(models.Model):
-    target_content_type = models.ForeignKey(Accommodation, on_delete=models.CASCADE, verbose_name=_('Отель'))
-    rating_value = models.PositiveIntegerField(default=0)
-    total_ratings = models.PositiveIntegerField(default=0)
-
-    def __str__(self):
-        return f"Рейтинг {self.target_content_type.name}"
-
-    class Meta:
-        verbose_name = 'Рейтинг'
-        verbose_name_plural = 'Рейтинги'
-
-
-class AccommodationImage(models.Model):
-    accommodation_id = models.ForeignKey('Accommodation', on_delete=models.DO_NOTHING, verbose_name=_('Отель'))
-    image = models.ImageField(upload_to='accommodations', verbose_name=_("Загрузить изображение"))
-
-    def __str__(self):
-        return str(self.image)
-
-    class Meta:
-        db_table = 'accommodation_images'
-        verbose_name = 'Изображение отеля'
-        verbose_name_plural = 'Изображение отелей'
 
 
 class City(models.Model):

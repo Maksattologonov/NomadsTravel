@@ -3,15 +3,6 @@ from django_admin_geomap import ModelAdmin
 from .models import *
 
 
-class AccommodationImageInline(admin.TabularInline):
-    model = AccommodationImage
-
-
-@admin.register(Accommodation)
-class AccommodationAdmin(admin.ModelAdmin):
-    inlines = [AccommodationImageInline, ]
-
-
 class CityImageInlineAdmin(admin.TabularInline):
     model = CityImage
 
@@ -47,11 +38,6 @@ class LocationAdmin(ModelAdmin):
     geomap_default_longitude = "77.84343"
     geomap_default_latitude = "42.84343"
     geomap_default_zoom = '5'
-
-
-@admin.register(AccommodationRating)
-class AccommodationRatingAdmin(admin.ModelAdmin):
-    pass
 
 
 @admin.register(Destination)
