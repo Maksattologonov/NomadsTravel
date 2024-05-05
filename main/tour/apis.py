@@ -4,7 +4,7 @@ from rest_framework import serializers
 from accommodation.models import Accommodation, AccommodationRating
 from categories.models import Visa, Health, Gear, Includes, Excludes
 from .models import City, Location, Region, CityImage, Destination, Tour, \
-    TypeOfTour, DestinationRating
+    TypeOfTour, DestinationRating, TourDay
 
 
 class RegionSerializer(serializers.ModelSerializer):
@@ -49,6 +49,12 @@ class AccommodationSerializer(serializers.ModelSerializer):
             return total_ratings if total_ratings is not None else 0
         except Exception as e:
             return 0
+
+
+class DestinationForTourSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Destination
+        fields = '__all__'
 
 
 class GetCitySerializer(serializers.ModelSerializer):
@@ -163,13 +169,20 @@ class ExcludesSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class TourDaySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TourDay
+        fields = '__all__'
+
+
 class TourSerializer(serializers.ModelSerializer):
-    destinations = DestinationsSerializer(many=True)
+    destinations = DestinationForTourSerializer(many=True)
     type_of = TypeOfTourSerializer(many=True)
     visa_information = VisaSerializer(many=True)
     health_information = HealthSerializer(many=True)
     includes = IncludesSerializer(many=True)
     excludes = ExcludesSerializer(many=True)
+    tour_days = TourDaySerializer(many=True)
 
     class Meta:
         model = Tour

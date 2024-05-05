@@ -73,3 +73,8 @@ class DestinationRatingAdmin(ModelAdmin):
 @admin.register(Activity)
 class ActivityAdmin(ModelAdmin):
     pass
+
+
+@admin.register(TourDay)
+class TourDayAdmin(ModelAdmin):
+    pass

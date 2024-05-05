@@ -141,6 +141,7 @@ class Destination(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE, verbose_name=_("Локация"))
     region = models.ForeignKey(Region, on_delete=models.CASCADE, verbose_name=_("Регион"))
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name=_("Категория"))
+    active = models.BooleanField(default=True, verbose_name=_("Активный"))
     weather = models.CharField(verbose_name=_("Погода"), max_length=255)
 
     def __str__(self):
@@ -153,7 +154,7 @@ class Destination(models.Model):
 
 
 class DestinationRating(models.Model):
-    destination = models.ForeignKey('Destination',  related_name='ratings', on_delete=models.CASCADE)
+    destination = models.ForeignKey('Destination', related_name='ratings', on_delete=models.CASCADE)
     value = models.DecimalField(verbose_name=_('Рейтинг'), max_digits=2, decimal_places=1)
 
     def __str__(self):
@@ -177,7 +178,8 @@ class Tour(models.Model):
     description = models.TextField(verbose_name=_("Описание"))
     date_start = models.DateTimeField(verbose_name=_("Дата начала"))
     duration_date = models.CharField(max_length=255, verbose_name=_("Длительность"))
-    destinations = models.ForeignKey(Destination, on_delete=models.CASCADE, related_name="tour", verbose_name=_("Пункты"))
+    destinations = models.ManyToManyField(Destination, related_name="destinations",
+                                          verbose_name=_("Пункты"))
     # level = models.CharField(choices=TOUR_LEVEL, max_length=25, verbose_name=_("Сложность"))
     type_of = models.ManyToManyField(to=TypeOfTour, verbose_name=_("Сложность"))
     distance = models.FloatField(verbose_name=_("Дистанция"))
@@ -214,6 +216,24 @@ class TourPhotos(models.Model):
         db_table = 'tour_images'
         verbose_name = 'Изображение'
         verbose_name_plural = 'Изображения'
+
+
+class TourDay(models.Model):
+    tour = models.ForeignKey(Tour, on_delete=models.CASCADE, related_name="tour_days", verbose_name=_("Тур"))
+    day_number = models.PositiveIntegerField(verbose_name=_("Номер дня"))
+    locations = models.ManyToManyField(Location, verbose_name=_("Локации"))
+    description = models.TextField(verbose_name=_("Описание"))
+    meals = models.ForeignKey(Meal, on_delete=models.CASCADE, verbose_name=_("Питание"))
+    accommodation = models.ForeignKey(Accommodation, on_delete=models.CASCADE, verbose_name=_("Проживание"))
+    entertainment = models.CharField(max_length=255, verbose_name=_("Развлечения"))
+    details = models.TextField(verbose_name=_("Детали"))
+
+    class Meta:
+        verbose_name = _("День тура")
+        verbose_name_plural = _("Дни тура")
+
+    def __str__(self):
+        return f"{self.tour.title} - Day {self.day_number}"
 
 
 class Itinerary(models.Model):
@@ -279,7 +299,8 @@ class TourRating(models.Model):
 
 class Activity(models.Model):
     name = models.CharField(max_length=255, verbose_name=_("Название"))
-    destination = models.ForeignKey(Destination, related_name='activity', on_delete=models.CASCADE, verbose_name='Пункт')
+    destination = models.ForeignKey(Destination, related_name='activity', on_delete=models.CASCADE,
+                                    verbose_name='Пункт')
 
     def __str__(self):
         return self.name

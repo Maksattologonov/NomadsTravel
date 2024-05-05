@@ -33,7 +33,7 @@ class DestinationService:
     model = Destination
 
     @classmethod
-    def get(cls, **filters):
+    def  get(cls, **filters):
         try:
             return cls.model.objects.filter(**filters).prefetch_related('tour').prefetch_related('activity')
         except cls.model.DoesNotExist:
