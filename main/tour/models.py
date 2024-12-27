@@ -219,11 +219,15 @@ class TourPhotos(models.Model):
 
 
 class TourDay(models.Model):
-    tour = models.ForeignKey(Tour, on_delete=models.CASCADE, related_name="tour_days", verbose_name=_("Тур"))
     day_number = models.PositiveIntegerField(verbose_name=_("Номер дня"))
-    locations = models.ManyToManyField(Location, verbose_name=_("Локации"))
+    # locations = models.ManyToManyField(Location, verbose_name=_("Локации"))
+    destination = models.ManyToManyField(Destination, verbose_name=_('Пункты'))
     description = models.TextField(verbose_name=_("Описание"))
-    meals = models.ForeignKey(Meal, on_delete=models.CASCADE, verbose_name=_("Питание"))
+    car_range = models.PositiveIntegerField(verbose_name=_('Длина пути на машине'))
+    tracking_range = models.PositiveIntegerField(verbose_name=_('Длина пути пешком'))
+    height_difference = models.CharField(verbose_name=_('Перепад высоты'), max_length=255)
+    weather = models.CharField(verbose_name=_('Погода'), max_length=255)
+    meals = models.ManyToManyField(Meal, verbose_name=_("Питание"))
     accommodation = models.ForeignKey(Accommodation, on_delete=models.CASCADE, verbose_name=_("Проживание"))
     entertainment = models.CharField(max_length=255, verbose_name=_("Развлечения"))
     details = models.TextField(verbose_name=_("Детали"))
