@@ -178,7 +178,7 @@ class Tour(models.Model):
     description = models.TextField(verbose_name=_("Описание"))
     date_start = models.DateTimeField(verbose_name=_("Дата начала"))
     duration_date = models.CharField(max_length=255, verbose_name=_("Длительность"))
-    destinations = models.ManyToManyField(Destination, related_name="destinations",
+    destinations = models.ManyToManyField(Destination, related_name="tour_id",
                                           verbose_name=_("Пункты"))
     # level = models.CharField(choices=TOUR_LEVEL, max_length=25, verbose_name=_("Сложность"))
     type_of = models.ManyToManyField(to=TypeOfTour, verbose_name=_("Сложность"))

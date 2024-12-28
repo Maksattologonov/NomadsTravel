@@ -88,12 +88,12 @@ class DestinationRatingCreateSerializer(serializers.ModelSerializer):
 
 class DestinationSerializer(serializers.ModelSerializer):
     map_coordinate = serializers.SerializerMethodField()
-    tour = serializers.SerializerMethodField()
+    tour_id = serializers.SerializerMethodField()
     activity = serializers.SerializerMethodField()
 
     class Meta:
         model = Destination
-        fields = ('title', 'description', 'main_image', 'map_coordinate', 'activity', 'tour')
+        fields = ('title', 'description', 'main_image', 'map_coordinate', 'activity', 'tour_id')
 
     def get_map_coordinate(self, obj):
         return {obj.location.lon, obj.location.lat}
@@ -104,6 +104,8 @@ class DestinationSerializer(serializers.ModelSerializer):
     def get_activity(self, obj):
         return [activity.name for activity in obj.activity.filter()]
 
+    def get_tour_id(self, obj):
+        return [tour.title for tour in obj.tour_id.filter()]
 
 class DestinationsSerializer(serializers.ModelSerializer):
     map_coordinate = serializers.SerializerMethodField()
