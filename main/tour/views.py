@@ -1,5 +1,8 @@
+from msilib.schema import ListView
+
 from django.shortcuts import render
 from rest_framework import status
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -8,6 +11,7 @@ from common.schemas.tour import AccommodationSchema, CitySchema, DestinationSche
     DestinationsSchema
 from .apis import AccommodationSerializer, GetCitySerializer, DestinationsSerializer, DestinationsTitleSerializer, \
     TourSerializer, DestinationRatingSerializer, DestinationRatingCreateSerializer, DestinationSerializer
+from .models import Tour
 from .services import AccommodationService, CityService, DestinationService, TourService, DestinationRouteService
 
 
@@ -83,11 +87,18 @@ class DestinationsTitleAPIView(APIView):
 class ToursAPIView(APIView):
     permission_classes = [AllowAny]
     schema = TourSchema()
+    model = Tour
 
     def get(self, request):
-        queryset = TourService.get()
+        queryset = TourService.get(request)
         serializer = TourSerializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+    # def get(self, request):
+    #     queryset = TourService.get()
+    #     serializer = TourSerializer(queryset, many=True)
+    #     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 class DestinationRatingAPIView(APIView):

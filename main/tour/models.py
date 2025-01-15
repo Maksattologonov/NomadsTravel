@@ -1,11 +1,13 @@
+import requests
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
+from datetime import datetime, timedelta
 from accommodation.models import Accommodation
 from categories.models import Category, Health, Visa, Gear, Includes, Excludes, Meal, Entertainment
 from user.models import CustomUser
 from .managers import Location
+from django.conf import settings
 
 
 class Booking(models.Model):
@@ -110,15 +112,15 @@ class CountryImage(models.Model):
 
 
 class TypeOfTour(models.Model):
-    type = models.CharField(max_length=100, verbose_name=_("Тип"))
+    type = models.CharField(max_length=100, verbose_name=_("Сложность"))
 
     def __str__(self):
         return self.type
 
     class Meta:
-        db_table = "type_of tour"
-        verbose_name = 'Тип Тура'
-        verbose_name_plural = 'Типы Туров'
+        db_table = "level_of tour"
+        verbose_name = 'Сложность Тура'
+        verbose_name_plural = 'Сложности Туров'
 
 
 class DestinationImages(models.Model):
@@ -142,7 +144,6 @@ class Destination(models.Model):
     region = models.ForeignKey(Region, on_delete=models.CASCADE, verbose_name=_("Регион"))
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name=_("Категория"))
     active = models.BooleanField(default=True, verbose_name=_("Активный"))
-    weather = models.CharField(verbose_name=_("Погода"), max_length=255)
 
     def __str__(self):
         return str(self.title)
@@ -167,28 +168,33 @@ class DestinationRating(models.Model):
 
 
 class Tour(models.Model):
-    TOUR_LEVEL = [
-        ("Easy", "easy"),
-        ("Medium", "medium"),
-        ("Hard", "hard"),
+    TYPE_OF_DIFFICULTY = [
+        ('1', 'Легкий'),
+        ('2', 'Средний'),
+        ('3', 'Сложный'),
     ]
 
-    title = models.CharField(max_length=255, verbose_name=_('Название тура'))
+    TYPE_OF_VISA_INFO = [
+        ('электронная', 'Электронная виза'),
+        ('обыкновенная ', 'Обыкновенная  виза'),
+        ('транзитная', 'Транзитная виза'),
+        ('временная', 'Виза временно проживающего лица'),
+    ]
+    name = models.CharField(max_length=255, verbose_name=_('Название тура'))
     price = models.PositiveIntegerField(verbose_name=_("Цена"))
+    promotion = models.PositiveSmallIntegerField(default=0, verbose_name=_("Скидка"),
+                                                 help_text='Указывайте в дробном виде 0.1')
+    countries = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'type__in': ['country']})
     description = models.TextField(verbose_name=_("Описание"))
     date_start = models.DateTimeField(verbose_name=_("Дата начала"))
-    duration_date = models.CharField(max_length=255, verbose_name=_("Длительность"))
-    destinations = models.ManyToManyField(Destination, related_name="tour_id",
-                                          verbose_name=_("Пункты"))
-    # level = models.CharField(choices=TOUR_LEVEL, max_length=25, verbose_name=_("Сложность"))
-    type_of = models.ManyToManyField(to=TypeOfTour, verbose_name=_("Сложность"))
-    distance = models.FloatField(verbose_name=_("Дистанция"))
-    altitude = models.CharField(max_length=255, verbose_name=_("Перепад высоты"))
-    visa_information = models.ManyToManyField(to=Visa,
-                                              verbose_name=_("Информация о визе"))
+    duration = models.CharField(max_length=255, verbose_name=_("Длительность"))
+    tour_types = models.ManyToManyField(to=TypeOfTour)
+    difficulty = models.CharField(choices=TYPE_OF_DIFFICULTY, max_length=20, verbose_name=_("Сложность"))
+    total_distance = models.FloatField(verbose_name=_("Итоговая дистанция"))
+    visa_information = models.CharField(choices=TYPE_OF_VISA_INFO, max_length=255,
+                                        verbose_name=_("Информация о визе"))
     health_information = models.ManyToManyField(to=Health,
                                                 verbose_name=_("Информация о здоровье"))
-    weather = models.CharField(verbose_name=_("Погода"), max_length=255)
     notes = models.TextField(verbose_name=_("Примечания"))
     video = models.URLField(verbose_name=_("Ссылка на видео"))
     main_image = models.ImageField(upload_to="tour/", verbose_name=_("Главное изображение"))
@@ -197,7 +203,15 @@ class Tour(models.Model):
     excludes = models.ManyToManyField(to=Excludes, verbose_name=_("Исключения"))
 
     def __str__(self):
-        return self.title
+        return self.name
+
+    @property
+    def geomap_longitude(self):
+        return self.countries.lon if self.countries.lon else None
+
+    @property
+    def geomap_latitude(self):
+        return self.countries.lat if self.countries.lat else None
 
     class Meta:
         db_table = "tour"
@@ -219,25 +233,68 @@ class TourPhotos(models.Model):
 
 
 class TourDay(models.Model):
+    MEALS = [
+        ("Звтрак", "breakfast"),
+        ("Обед", "medium"),
+        ("Ужин", "hard"),
+    ]
+
+    tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
     day_number = models.PositiveIntegerField(verbose_name=_("Номер дня"))
     # locations = models.ManyToManyField(Location, verbose_name=_("Локации"))
     destination = models.ManyToManyField(Destination, verbose_name=_('Пункты'))
-    description = models.TextField(verbose_name=_("Описание"))
-    car_range = models.PositiveIntegerField(verbose_name=_('Длина пути на машине'))
-    tracking_range = models.PositiveIntegerField(verbose_name=_('Длина пути пешком'))
-    height_difference = models.CharField(verbose_name=_('Перепад высоты'), max_length=255)
+    description = models.TextField(verbose_name=_("Описание"), null=True)
+    main_image = models.ImageField(upload_to="tour/", verbose_name=_("Главное изображение"), null=True)
+    car_range = models.PositiveIntegerField(verbose_name=_('Длина пути на машине'), null=True)
+    tracking_range = models.PositiveIntegerField(verbose_name=_('Длина пути пешком'), null=True)
+    height_difference = models.CharField(verbose_name=_('Перепад высоты'), max_length=255, null=True)
     weather = models.CharField(verbose_name=_('Погода'), max_length=255)
-    meals = models.ManyToManyField(Meal, verbose_name=_("Питание"))
-    accommodation = models.ForeignKey(Accommodation, on_delete=models.CASCADE, verbose_name=_("Проживание"))
+    weather_date = models.DateField(verbose_name=_('Дата погоды'))
+    meals = models.CharField(choices=MEALS, verbose_name=_("Питание"), max_length=50, null=True)
+    accommodation = models.ForeignKey(Accommodation, on_delete=models.CASCADE, verbose_name=_("Проживание"), null=True)
     entertainment = models.CharField(max_length=255, verbose_name=_("Развлечения"))
     details = models.TextField(verbose_name=_("Детали"))
 
     class Meta:
+        db_table = 'tour_day'
         verbose_name = _("День тура")
         verbose_name_plural = _("Дни тура")
 
     def __str__(self):
         return f"{self.tour.title} - Day {self.day_number}"
+
+    def fetch_weather(self):
+        destination = self.destination.first()
+        if not destination:
+            self.weather = "Нет пункта назначения"
+            self.save()
+            return
+
+        api_key = settings.OPEN_WEATHER_MAP_TOKEN
+        date = self.weather_date or (datetime.now().date() + timedelta(days=1))
+        url = f"https://api.openweathermap.org/data/2.5/forecast?lat={destination.location.lat}&lon={destination.location.lon}&appid={api_key}&units=metric"
+
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            forecast = self.find_forecast_for_date(data['list'], date)
+            if forecast:
+                temp = forecast['main']['temp']
+                description = forecast['weather'][0]['description']
+                self.weather = f"{temp}°C, {description}"
+            else:
+                self.weather = "Нет данных для этой даты"
+        else:
+            self.weather = "Ошибка получения погоды"
+
+        self.save()
+
+    def find_forecast_for_date(self, forecasts, target_date):
+        for forecast in forecasts:
+            forecast_date = forecast['dt_txt'].split(' ')[0]  # Формат даты
+            if forecast_date == str(target_date):
+                return forecast
+        return None
 
 
 class Itinerary(models.Model):

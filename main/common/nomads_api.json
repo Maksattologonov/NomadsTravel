@@ -1,0 +1,83 @@
+{
+    "api/tours/{ tour_type_id?='1,2,3,4...', promotion?='30%, 20%, 10% ...', difficulty_from?: '1', dificulty_to?: '3',  coutries_id?='1,2,3,4,5...', desctions_id?='1,2,3...'?, from_date?, to_date?, min_price?, max_price? min_days?, max_days?}": [
+        {
+            "id": "",
+            "name": "",
+            "description": "",
+            "price": "",
+            "promotion": "",
+            "days_count": "",
+            "difficulty": "",
+            "countries": [],
+            "tour_types": [],
+            "reviews": [
+                {
+                    "count": 5,
+                    "rating": 4
+                }
+            ]
+        }
+    ],
+    
+   "api/tour/detail/tour_id": [
+        {
+            потом аскат толтурат, тут очень много инфы!!!
+        }
+   ], 
+
+   "api/destinations/{tour_id?, country_id?, region_id, hotel_id}": [
+        {
+            "id": 1,
+            "name": "",
+            "image": ""
+        }
+   ],
+
+    "api/destination/detail/description_id": {
+        потом аскат толтурат, тут очень много инфы!!!
+   }, 
+
+   "api/reviews": [
+        {
+            "id":1,
+            "comment": "",
+            "date": "",
+            "images": [],
+            "tour": {
+                "id": 1,
+                "name": ""
+            },       
+            "user_name": {
+                "id": 1,
+                "name": "",
+                "avatar": ""
+            },
+            "accommodation": "1-5",
+            "enterhantmennts": "1-5",
+            "food": "1-5",
+            "guide": "1-5",
+            "vehicle": "1-5"
+    }
+   ],
+
+   "api/compony/statistics": [
+        {
+            "awesome_hikers": 1000,
+            "stunning_places": 30,
+            "miles_to_hike": 1000,
+            "days_in_service": 1000
+        }
+   ],
+
+   "api/partners": [
+        {
+            "id": 1,
+            "logo": "",
+            "link": ""
+        }
+   ],
+
+    "api/contacts='kg, uz, kz...'": [
+        {"id": "number", "name": "string"}
+    ]
+}

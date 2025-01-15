@@ -1,5 +1,8 @@
+import requests
+
+from django.conf import settings
 from datetime import datetime
-import time
+from django.conf import settings
 
 
 def time_of_function(function):
@@ -9,3 +12,11 @@ def time_of_function(function):
         print(datetime.now() - start)
         return res
     return wrapper
+
+def get_weather(lat, lon):
+    api_key = settings.OPENWEATHER_API_KEY  # Добавь ключ в settings.py
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={settings.OPEN_WEATHER_MAP_TOKEN}&units=metric"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    return None
