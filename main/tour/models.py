@@ -184,7 +184,7 @@ class Tour(models.Model):
     price = models.PositiveIntegerField(verbose_name=_("Цена"))
     promotion = models.PositiveSmallIntegerField(default=0, verbose_name=_("Скидка"),
                                                  help_text='Указывайте в дробном виде 0.1')
-    countries = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'type__in': ['country']})
+    countries = models.ManyToManyField(to=Location, limit_choices_to={'type__in': ['country']})
     description = models.TextField(verbose_name=_("Описание"))
     date_start = models.DateTimeField(verbose_name=_("Дата начала"))
     duration = models.CharField(max_length=255, verbose_name=_("Длительность"))
@@ -350,7 +350,7 @@ class TourRating(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name=_("Пользователь"))
 
     def __str__(self):
-        return f"{self.tour_id}, Пользователь: {self.user.name}, Рейтиинг: {self.rating}"
+        return f"{self.tour_id}, Пользователь: {self.user.email}, Рейтиинг: {self.rating}"
 
     class Meta:
         db_table = 'tour_rating'

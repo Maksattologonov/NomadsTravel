@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from accommodation.models import Accommodation, AccommodationRating
 from categories.models import Visa, Health, Gear, Includes, Excludes
+from common.utils import avg
 from .models import City, Location, Region, CityImage, Destination, Tour, \
     TypeOfTour, DestinationRating, TourDay, TourRating
 
@@ -135,11 +136,6 @@ class DestinationsTitleSerializer(serializers.ModelSerializer):
         fields = ('title', 'main_image')
 
 
-class TypeOfTourSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TypeOfTour
-        fields = "__all__"
-
 
 class VisaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -185,21 +181,41 @@ class TourRatingSerializer(serializers.ModelSerializer):
         model = TourRating
         fields = ['id', 'tour_id', 'tour_name', 'rating', 'user', 'user_name']
 
-class TourSerializer(serializers.ModelSerializer):
-    countries = serializers.StringRelatedField()
-    reviews = TourRatingSerializer(source='tourrating_set', many=True, read_only=True)
-    tour_types = serializers.StringRelatedField(many=True)
 
+class TourSerializer(serializers.ModelSerializer):
+    countries = serializers.SerializerMethodField()
+    tour_types = serializers.SerializerMethodField()
+    reviews = serializers.SerializerMethodField()
 
     class Meta:
         model = Tour
-        fields = ('name', 'description', 'difficulty', 'tour_types', 'promotion', 'duration', 'countries', 'reviews')
-
-    def get_tour_types(self, obj):
-        return TypeOfTour.objects.filter(id=obj.tour_id.id)
+        fields = [
+            "id",
+            "name",
+            "description",
+            "price",
+            "promotion",
+            "duration",
+            "difficulty",
+            "countries",
+            "tour_types",
+            "reviews",
+        ]
 
     def get_countries(self, obj):
-        return Location.objects.filter(id=obj.countries.id)
+        return [countries.name for countries in obj.countries.all()]
 
+    def get_tour_types(self, obj):
+        return [tour_type.type for tour_type in obj.tour_types.all()]
 
-
+    def get_reviews(self, obj):
+        ratings = TourRating.objects.filter(tour_id=obj.id).values_list('rating', flat=True)
+        if ratings.exists():
+            return {
+                "count": ratings.count(),
+                "rating": avg(list(ratings))
+            }
+        return {
+            "count": 0,
+            "rating": None
+        }

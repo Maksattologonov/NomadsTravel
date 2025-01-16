@@ -20,3 +20,6 @@ def get_weather(lat, lon):
     if response.status_code == 200:
         return response.json()
     return None
+
+def avg(arr: list) -> float:
+    return sum(arr) / len(arr)

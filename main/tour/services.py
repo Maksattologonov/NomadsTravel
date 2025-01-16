@@ -60,63 +60,54 @@ class TourService:
 
     @classmethod
     def get(cls, request):
-        try:
-            filters = Q()
+        filters = Q()
 
-            tour_type_id = request.GET.get('tour_type_id')
-            if tour_type_id:
-                filters &= Q(tour_types__in=tour_type_id.split(','))
+        tour_type_id = request.GET.get('tour_type_id')
+        if tour_type_id:
+            filters &= Q(tour_types__id__in=tour_type_id.split(','))
 
-            promotion = request.GET.get('promotion')
-            if promotion:
-                filters &= Q(promotion__in=promotion.split(','))
+        promotion = request.GET.get('promotion')
+        if promotion:
+            filters &= Q(promotion__in=promotion.split(','))
 
-            difficulty_from = request.GET.get('difficulty_from')
-            if difficulty_from:
-                filters &= Q(difficulty__gte=int(difficulty_from))
+        difficulty_from = request.GET.get('difficulty_from')
+        if difficulty_from:
+            filters &= Q(difficulty__gte=difficulty_from)
 
-            difficulty_to = request.GET.get('difficulty_to')
-            if difficulty_to:
-                filters &= Q(difficulty__lte=int(difficulty_to))
+        difficulty_to = request.GET.get('difficulty_to')
+        if difficulty_to:
+            filters &= Q(difficulty__lte=difficulty_to)
 
-            countries_id = request.GET.get('countries_id')
-            if countries_id:
-                filters &= Q(countries__in=countries_id.split(','))
+        countries_id = request.GET.get('countries_id')
+        if countries_id:
+            filters &= Q(countries__id__in=countries_id.split(','))
 
-            descriptions_id = request.GET.get('descriptions_id')
-            if descriptions_id:
-                filters &= Q(descriptions__in=descriptions_id.split(','))
+        from_date = request.GET.get('from_date')
+        if from_date:
+            filters &= Q(date_start__gte=from_date)
 
-            from_date = request.GET.get('from_date')
-            if from_date:
-                filters &= Q(date_start__gte=from_date)
+        to_date = request.GET.get('to_date')
+        if to_date:
+            filters &= Q(date_start__lte=to_date)
 
-            to_date = request.GET.get('to_date')
-            if to_date:
-                filters &= Q(date_start__lte=to_date)
+        min_price = request.GET.get('min_price')
+        if min_price:
+            filters &= Q(price__gte=float(min_price))
 
-            min_price = request.GET.get('min_price')
-            if min_price:
-                filters &= Q(price__gte=float(min_price))
+        max_price = request.GET.get('max_price')
+        if max_price:
+            filters &= Q(price__lte=float(max_price))
 
-            max_price = request.GET.get('max_price')
-            if max_price:
-                filters &= Q(price__lte=float(max_price))
+        min_days = request.GET.get('min_days')
+        if min_days:
+            filters &= Q(duration__gte=min_days)
 
-            min_days = request.GET.get('min_days')
-            if min_days:
-                filters &= Q(duration__gte=int(min_days))
+        max_days = request.GET.get('max_days')
+        if max_days:
+            filters &= Q(duration__lte=max_days)
 
-            max_days = request.GET.get('max_days')
-            if max_days:
-                filters &= Q(duration__lte=int(max_days))
+        return cls.model.objects.filter(filters).distinct()
 
-            tours = Tour.objects.filter(filters).distinct()
-            data = list(tours.values())
-
-            return data
-        except cls.model.DoesNotExist:
-            raise ObjectNotFoundException('Tour not found')
 
 
 class DestinationRouteService:

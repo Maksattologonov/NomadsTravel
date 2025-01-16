@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  web:
+    build: ./main
+    container_name: nomadstravel-web
+    volumes:
+      - .:/main
+    env_file:
+      - main/.env
+    expose:
+      - "8000"
+
+  nginx:
+    image: nginx:latest
+    container_name: nomadstravel-nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - /main/nginx.conf:/main/nginx.conf
+    depends_on:
+      - web

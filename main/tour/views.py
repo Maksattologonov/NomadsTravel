@@ -1,6 +1,4 @@
-from msilib.schema import ListView
 
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
@@ -86,12 +84,10 @@ class DestinationsTitleAPIView(APIView):
 
 class ToursAPIView(APIView):
     permission_classes = [AllowAny]
-    schema = TourSchema()
-    model = Tour
 
     def get(self, request):
-        queryset = TourService.get(request)
-        serializer = TourSerializer(queryset, many=True)
+        tours = TourService.get(request)
+        serializer = TourSerializer(tours, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
