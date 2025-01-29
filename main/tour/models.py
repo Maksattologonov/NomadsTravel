@@ -112,15 +112,15 @@ class CountryImage(models.Model):
 
 
 class TypeOfTour(models.Model):
-    type = models.CharField(max_length=100, verbose_name=_("Сложность"))
+    type = models.CharField(max_length=100, verbose_name=_("Тип"))
 
     def __str__(self):
         return self.type
 
     class Meta:
         db_table = "level_of tour"
-        verbose_name = 'Сложность Тура'
-        verbose_name_plural = 'Сложности Туров'
+        verbose_name = 'Тип Тура'
+        verbose_name_plural = 'Типы Туров'
 
 
 class DestinationImages(models.Model):
@@ -188,30 +188,30 @@ class Tour(models.Model):
     description = models.TextField(verbose_name=_("Описание"))
     date_start = models.DateTimeField(verbose_name=_("Дата начала"))
     duration = models.CharField(max_length=255, verbose_name=_("Длительность"))
-    tour_types = models.ManyToManyField(to=TypeOfTour)
+    tour_types = models.ManyToManyField(to=TypeOfTour, blank=True)
     difficulty = models.CharField(choices=TYPE_OF_DIFFICULTY, max_length=20, verbose_name=_("Сложность"))
-    total_distance = models.FloatField(verbose_name=_("Итоговая дистанция"))
+    total_distance = models.FloatField(verbose_name=_("Итоговая дистанция"), blank=True)
     visa_information = models.CharField(choices=TYPE_OF_VISA_INFO, max_length=255,
                                         verbose_name=_("Информация о визе"))
     health_information = models.ManyToManyField(to=Health,
-                                                verbose_name=_("Информация о здоровье"))
-    notes = models.TextField(verbose_name=_("Примечания"))
-    video = models.URLField(verbose_name=_("Ссылка на видео"))
+                                                verbose_name=_("Информация о здоровье"), blank=True)
+    notes = models.TextField(verbose_name=_("Примечания"), null=True, blank=True)
+    video = models.URLField(verbose_name=_("Ссылка на видео"), null=True, blank=True)
     main_image = models.ImageField(upload_to="tour/", verbose_name=_("Главное изображение"))
-    personal_gear = models.ManyToManyField(to=Gear, verbose_name=_("Снаряжение"))
-    includes = models.ManyToManyField(to=Includes, verbose_name=_("Включения"))
-    excludes = models.ManyToManyField(to=Excludes, verbose_name=_("Исключения"))
+    personal_gear = models.ManyToManyField(to=Gear, verbose_name=_("Снаряжение"), blank=True)
+    includes = models.ManyToManyField(to=Includes, verbose_name=_("Включения"), blank=True)
+    excludes = models.ManyToManyField(to=Excludes, verbose_name=_("Исключения"), blank=True)
 
     def __str__(self):
         return self.name
 
     @property
     def geomap_longitude(self):
-        return self.countries.lon if self.countries.lon else None
+        return self.countries if self.countries else None
 
     @property
     def geomap_latitude(self):
-        return self.countries.lat if self.countries.lat else None
+        return self.countries if self.countries else None
 
     class Meta:
         db_table = "tour"

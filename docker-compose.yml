@@ -5,7 +5,9 @@ services:
     build: ./main
     container_name: nomadstravel-web
     volumes:
-      - .:/main
+      - ./main:/main
+      - static_volume:/main/static
+      - media_volume:/main/media
     env_file:
       - main/.env
     expose:
@@ -17,6 +19,12 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - /main/nginx.conf:/main/nginx.conf
+      - ./main/nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/main/static
+      - media_volume:/main/media
     depends_on:
       - web
+
+volumes:
+  static_volume:
+  media_volume:
