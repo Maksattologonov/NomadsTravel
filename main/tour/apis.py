@@ -133,7 +133,7 @@ class DestinationsSerializer(serializers.ModelSerializer):
 class DestinationsTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Destination
-        fields = ('title', 'main_image')
+        fields = ('id', 'title', 'main_image')
 
 
 
