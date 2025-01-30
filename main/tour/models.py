@@ -239,7 +239,7 @@ class TourDay(models.Model):
         ("Ужин", "hard"),
     ]
 
-    tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
+    tour = models.ForeignKey(Tour, related_name='days', on_delete=models.CASCADE)
     day_number = models.PositiveIntegerField(verbose_name=_("Номер дня"))
     # locations = models.ManyToManyField(Location, verbose_name=_("Локации"))
     destination = models.ManyToManyField(Destination, verbose_name=_('Пункты'))
@@ -251,7 +251,8 @@ class TourDay(models.Model):
     weather = models.CharField(verbose_name=_('Погода'), max_length=255)
     weather_date = models.DateField(verbose_name=_('Дата погоды'))
     meals = models.CharField(choices=MEALS, verbose_name=_("Питание"), max_length=50, null=True)
-    accommodation = models.ForeignKey(Accommodation, on_delete=models.CASCADE, verbose_name=_("Проживание"), null=True)
+    accommodation = models.ManyToManyField(to=Accommodation, related_name='accommodation',
+                                           verbose_name=_("Проживание"), blank=True)
     entertainment = models.CharField(max_length=255, verbose_name=_("Развлечения"))
     details = models.TextField(verbose_name=_("Детали"))
 
@@ -261,7 +262,7 @@ class TourDay(models.Model):
         verbose_name_plural = _("Дни тура")
 
     def __str__(self):
-        return f"{self.tour.title} - Day {self.day_number}"
+        return f"{self.tour.name} - Day {self.day_number}"
 
     def fetch_weather(self):
         destination = self.destination.first()

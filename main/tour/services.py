@@ -131,6 +131,12 @@ class TourService:
 
         return cls.model.objects.filter(filters).distinct()
 
+    @classmethod
+    def filter(cls, **filters):
+        try:
+            return cls.model.objects.filter(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Tour not found')
 
 
 class DestinationRouteService:
