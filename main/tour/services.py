@@ -41,6 +41,29 @@ class DestinationService:
             raise ObjectNotFoundException('Destination not found')
 
     @classmethod
+    def get_query_param(cls, request):
+        filters = Q()
+
+        tour_id = request.GET.get('tour_id')
+        if tour_id:
+            filters &= Q(pk__in=tour_id.split(','))
+        print(filters)
+
+        country_id = request.GET.get('country_id')
+        if country_id:
+            filters &= Q(location__in=country_id.split(','))
+
+        region_id = request.GET.get('region_id')
+        if region_id:
+            filters &= Q(region__in=region_id)
+
+        hotel_id = request.GET.get('hotel_id')
+        if hotel_id:
+            filters &= Q(hotel_id__lte=hotel_id)
+        print(filters)
+        return cls.model.objects.filter(filters).distinct()
+
+    @classmethod
     def filter(cls, **filters):
         try:
             return cls.model.objects.filter(**filters)
@@ -108,6 +131,12 @@ class TourService:
 
         return cls.model.objects.filter(filters).distinct()
 
+    @classmethod
+    def filter(cls, **filters):
+        try:
+            return cls.model.objects.filter(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Tour not found')
 
 
 class DestinationRouteService:
@@ -120,3 +149,4 @@ class DestinationRouteService:
             obj.save()
         except IntegrityError:
             raise ObjectAlreadyExistsException("Rating already exists")
+

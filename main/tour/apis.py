@@ -34,12 +34,11 @@ class LocationSerializer(serializers.ModelSerializer):
 
 class AccommodationSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
-    city = CitySerializer()
     location = LocationSerializer()
 
     class Meta:
         model = Accommodation
-        fields = ('name', 'description', 'address', 'city', 'location', 'rating')
+        fields = '__all__'
 
     def get_rating(self, instance):
         try:
@@ -133,7 +132,7 @@ class DestinationsSerializer(serializers.ModelSerializer):
 class DestinationsTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Destination
-        fields = ('title', 'main_image')
+        fields = ('id', 'title', 'main_image')
 
 
 
@@ -168,9 +167,13 @@ class ExcludesSerializer(serializers.ModelSerializer):
 
 
 class TourDaySerializer(serializers.ModelSerializer):
+    accommodation = AccommodationSerializer(many=True, read_only=True)
     class Meta:
         model = TourDay
         fields = '__all__'
+        depth = 2
+
+
 
 
 class TourRatingSerializer(serializers.ModelSerializer):
@@ -219,3 +222,44 @@ class TourSerializer(serializers.ModelSerializer):
             "count": 0,
             "rating": None
         }
+
+class TourDetailSerializer(serializers.ModelSerializer):
+    countries = serializers.SerializerMethodField()
+    tour_types = serializers.SerializerMethodField()
+    reviews = serializers.SerializerMethodField()
+    days = TourDaySerializer(many=True,  read_only=True)
+    class Meta:
+        model = Tour
+        depth = 3
+        fields = [
+            "id",
+            "name",
+            "description",
+            "price",
+            "promotion",
+            "duration",
+            "difficulty",
+            "countries",
+            "tour_types",
+            "reviews",
+            "days",
+        ]
+
+    def get_countries(self, obj):
+        return [countries.name for countries in obj.countries.all()]
+
+    def get_tour_types(self, obj):
+        return [tour_type.type for tour_type in obj.tour_types.all()]
+
+    def get_reviews(self, obj):
+        ratings = TourRating.objects.filter(tour_id=obj.id).values_list('rating', flat=True)
+        if ratings.exists():
+            return {
+                "count": ratings.count(),
+                "rating": avg(list(ratings))
+            }
+        return {
+            "count": 0,
+            "rating": None
+        }
+

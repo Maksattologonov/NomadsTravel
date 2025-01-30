@@ -8,7 +8,8 @@ from rest_framework.views import APIView
 from common.schemas.tour import AccommodationSchema, CitySchema, DestinationSchema, TourSchema, DestinationRatingSchema, \
     DestinationsSchema
 from .apis import AccommodationSerializer, GetCitySerializer, DestinationsSerializer, DestinationsTitleSerializer, \
-    TourSerializer, DestinationRatingSerializer, DestinationRatingCreateSerializer, DestinationSerializer
+    TourSerializer, DestinationRatingSerializer, DestinationRatingCreateSerializer, DestinationSerializer, \
+    TourDetailSerializer
 from .models import Tour
 from .services import AccommodationService, CityService, DestinationService, TourService, DestinationRouteService
 
@@ -63,12 +64,9 @@ class DestinationAPIView(APIView):
     schema = DestinationSchema()
 
     def get(self, request):
-        if request.query_params.get('id'):
-            queryset = DestinationService.get(id=request.query_params.get('id'))
-        else:
-            queryset = DestinationService.get(id=1)
+        queryset = DestinationService.get_query_param(request)
         print(queryset)
-        serializer = DestinationSerializer(queryset, many=True)
+        serializer = DestinationsTitleSerializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
@@ -85,9 +83,17 @@ class DestinationsTitleAPIView(APIView):
 class ToursAPIView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         tours = TourService.get(request)
         serializer = TourSerializer(tours, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+class ToursDetailAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        tours = TourService.filter(id=kwargs['id'])
+        serializer = TourDetailSerializer(tours, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
