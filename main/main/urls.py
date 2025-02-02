@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/docs', include_docs_urls(title='NomadsTravel')),
     path('api/', include('tour.urls')),
+    path('api/', include('user.urls')),
     path('api/', include('categories.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
