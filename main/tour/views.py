@@ -8,7 +8,8 @@ from rest_framework.views import APIView
 from common.schemas.tour import AccommodationSchema, CitySchema, DestinationSchema, TourSchema, DestinationRatingSchema, \
     DestinationsSchema
 from .apis import AccommodationSerializer, GetCitySerializer, DestinationsSerializer, DestinationsTitleSerializer, \
-    TourSerializer, DestinationRatingSerializer, DestinationRatingCreateSerializer, DestinationSerializer
+    TourSerializer, DestinationRatingSerializer, DestinationRatingCreateSerializer, DestinationSerializer, \
+    TourDetailSerializer
 from .models import Tour
 from .services import AccommodationService, CityService, DestinationService, TourService, DestinationRouteService
 
@@ -82,9 +83,17 @@ class DestinationsTitleAPIView(APIView):
 class ToursAPIView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         tours = TourService.get(request)
         serializer = TourSerializer(tours, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+class ToursDetailAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        tours = TourService.filter(id=kwargs['id'])
+        serializer = TourDetailSerializer(tours, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
