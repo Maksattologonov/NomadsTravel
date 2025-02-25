@@ -24,6 +24,10 @@ class RegionImageInlineAdmin(admin.TabularInline):
     model = RegionImage
 
 
+class DestinationImageInlineAdmin(admin.TabularInline):
+    model = DestinationImages
+
+
 @admin.register(Region)
 class RegionAdmin(admin.ModelAdmin):
     inlines = [RegionImageInlineAdmin]
@@ -50,7 +54,7 @@ class LocationAdmin(ModelAdmin):
 
 @admin.register(Destination)
 class DestinationAdmin(admin.ModelAdmin):
-    pass
+    inlines = [DestinationImageInlineAdmin]
 
 
 @admin.register(Tour)
