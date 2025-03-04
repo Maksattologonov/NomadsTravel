@@ -23,4 +23,3 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(blank=True, related_name='accommodation', to='accommodation.accommodation', verbose_name='Проживание'),
         ),
     ]
-
