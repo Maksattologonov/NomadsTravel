@@ -363,9 +363,18 @@ class Activity(models.Model):
     name = models.CharField(max_length=255, verbose_name=_("Название"))
     destination = models.ForeignKey(Destination, related_name='activity', on_delete=models.CASCADE,
                                     verbose_name='Пункт')
+    icon = models.ImageField(upload_to='icons', verbose_name=_('иконка'))
 
     def __str__(self):
         return self.name
+
+    @property
+    def geomap_longitude(self):
+        return self.destination.location.lat if self.destination.location.lon else None
+
+    @property
+    def geomap_latitude(self):
+        return self.destination.location.lat if self.destination.location.lon else None
 
     class Meta:
         db_table = 'activity'

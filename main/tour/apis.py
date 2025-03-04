@@ -5,13 +5,19 @@ from accommodation.models import Accommodation, AccommodationRating
 from categories.models import Visa, Health, Gear, Includes, Excludes
 from common.utils import avg
 from .models import City, Location, Region, CityImage, Destination, Tour, \
-    TypeOfTour, DestinationRating, TourDay, TourRating
+    TypeOfTour, DestinationRating, TourDay, TourRating, Activity
 
 
 class RegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Region
         fields = ('id', 'name')
+
+
+class ActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Activity
+        fields = '__all__'
 
 
 class CitySerializer(serializers.ModelSerializer):
@@ -262,4 +268,3 @@ class TourDetailSerializer(serializers.ModelSerializer):
             "count": 0,
             "rating": None
         }
-

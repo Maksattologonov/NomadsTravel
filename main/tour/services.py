@@ -2,7 +2,7 @@ from django.db import IntegrityError
 from django.db.models import Q
 
 from accommodation.models import Accommodation, AccommodationRating
-from .models import City, Destination, Tour, DestinationRating
+from .models import City, Destination, Tour, DestinationRating, Region, Activity
 
 from common.exceptions import ObjectNotFoundException, ObjectAlreadyExistsException
 
@@ -150,3 +150,32 @@ class DestinationRouteService:
         except IntegrityError:
             raise ObjectAlreadyExistsException("Rating already exists")
 
+
+# class ManagerMixin:
+#     def filter(self, **filters):
+#         try:
+#             return self.model.objects.filter(**filters)
+#         except self.model.DoesNotExist:
+#             raise ObjectNotFoundException('Field not found')
+
+
+class RegionService:
+    model = Region
+
+    @classmethod
+    def filter(cls, **filters):
+        try:
+            return cls.model.objects.filter(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Region not found')
+
+
+class ActivityService:
+    model = Activity
+
+    @classmethod
+    def filter(cls, **filters):
+        try:
+            return cls.model.objects.filter(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Activity not found')
