@@ -120,7 +120,7 @@ class DestinationsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Destination
-        fields = ('title', 'main_image', 'ratings', 'active', 'map_coordinate', 'region')
+        fields = ('id', 'title', 'main_image', 'ratings', 'active', 'map_coordinate', 'region')
 
     def get_map_coordinate(self, obj):
         return {obj.location.lon, obj.location.lat}
