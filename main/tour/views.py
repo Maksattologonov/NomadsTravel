@@ -66,7 +66,7 @@ class DestinationAPIView(APIView):
 
     def get(self, request):
         queryset = DestinationService.get_query_param(request)
-        print(queryset)
+        print(queryset.values('destination_image'))
         serializer = DestinationsTitleSerializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 

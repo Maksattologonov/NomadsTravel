@@ -5,7 +5,7 @@ from accommodation.models import Accommodation, AccommodationRating
 from categories.models import Visa, Health, Gear, Includes, Excludes
 from common.utils import avg
 from .models import City, Location, Region, CityImage, Destination, Tour, \
-    TypeOfTour, DestinationRating, TourDay, TourRating, Activity
+    TypeOfTour, DestinationRating, TourDay, TourRating, Activity, DestinationImages
 
 
 class RegionSerializer(serializers.ModelSerializer):
@@ -36,6 +36,12 @@ class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = ('id', 'name')
+
+
+class LocationLatLonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ('lat', 'lon')
 
 
 class AccommodationSerializer(serializers.ModelSerializer):
@@ -93,16 +99,16 @@ class DestinationRatingCreateSerializer(serializers.ModelSerializer):
 
 
 class DestinationSerializer(serializers.ModelSerializer):
-    map_coordinate = serializers.SerializerMethodField()
+    coordinates = serializers.SerializerMethodField()
     tour_id = serializers.SerializerMethodField()
     activity = serializers.SerializerMethodField()
 
     class Meta:
         model = Destination
-        fields = ('title', 'description', 'main_image', 'map_coordinate', 'activity', 'tour_id')
+        fields = ('title', 'description', 'main_image', 'coordinates', 'activity', 'tour_id')
 
-    def get_map_coordinate(self, obj):
-        return {obj.location.lon, obj.location.lat}
+    def get_coordinates(self, obj):
+        return [obj.location.lat, obj.location.lon]
 
     def get_tour(self, obj):
         return [tour.title for tour in obj.tour.filter()]
@@ -114,16 +120,16 @@ class DestinationSerializer(serializers.ModelSerializer):
         return [tour.title for tour in obj.tour_id.filter()]
 
 class DestinationsSerializer(serializers.ModelSerializer):
-    map_coordinate = serializers.SerializerMethodField()
+    coordinates = serializers.SerializerMethodField()
     ratings = serializers.SerializerMethodField()
     region = serializers.StringRelatedField(many=False)
 
     class Meta:
         model = Destination
-        fields = ('id', 'title', 'main_image', 'ratings', 'active', 'map_coordinate', 'region')
+        fields = ('id', 'title', 'main_image', 'ratings', 'active', 'coordinates', 'region')
 
-    def get_map_coordinate(self, obj):
-        return {obj.location.lon, obj.location.lat}
+    def get_coordinates(self, obj):
+        return [obj.location.lat, obj.location.lon]
 
     def get_ratings(self, obj):
         ratings = DestinationRating.objects.filter(destination_id=obj)
@@ -135,10 +141,31 @@ class DestinationsSerializer(serializers.ModelSerializer):
             return "0.00"
 
 
+class DestinationImagesSerializer(serializers.ModelSerializer):
+    alt = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DestinationImages
+        fields = ['alt', 'url']
+
+    def get_alt(self, obj):
+        return obj.image.name
+
+    def get_url(self, obj):
+        return obj.image.url
+
+
 class DestinationsTitleSerializer(serializers.ModelSerializer):
+    coordinates = serializers.SerializerMethodField()
+    images = DestinationImagesSerializer(many=True, read_only=True, source='destination_image')
+
     class Meta:
         model = Destination
-        fields = ('id', 'title', 'main_image')
+        fields = ['id', 'title', 'description', 'coordinates', 'images']
+
+    def get_coordinates(self, obj):
+        return [obj.location.lat, obj.location.lon]
 
 
 

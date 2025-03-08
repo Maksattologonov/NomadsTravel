@@ -113,6 +113,7 @@ class CountryImage(models.Model):
 
 class TypeOfTour(models.Model):
     type = models.CharField(max_length=100, verbose_name=_("Тип"))
+    icon = models.FileField(upload_to='icons', null=True, verbose_name=_("Иконка"))
 
     def __str__(self):
         return self.type
@@ -124,7 +125,8 @@ class TypeOfTour(models.Model):
 
 
 class DestinationImages(models.Model):
-    destination_id = models.ForeignKey('Destination', on_delete=models.DO_NOTHING, verbose_name=_('Страна'))
+    destination_id = models.ForeignKey('Destination', related_name='destination_image', on_delete=models.DO_NOTHING,
+                                       verbose_name=_('Страна'))
     image = models.ImageField(upload_to='destination/', verbose_name=_("Загрузить изображение"))
 
     def __str__(self):
@@ -235,8 +237,9 @@ class TourPhotos(models.Model):
 class TourDay(models.Model):
     MEALS = [
         ("Звтрак", "breakfast"),
-        ("Обед", "medium"),
-        ("Ужин", "hard"),
+        ("Обед", "lunch"),
+        ("Ланч бокс", "lunch-box"),
+        ("Ужин", "dinner"),
     ]
 
     tour = models.ForeignKey(Tour, related_name='days', on_delete=models.CASCADE)
@@ -253,7 +256,8 @@ class TourDay(models.Model):
     meals = models.CharField(choices=MEALS, verbose_name=_("Питание"), max_length=50, null=True)
     accommodation = models.ManyToManyField(to=Accommodation, related_name='accommodation',
                                            verbose_name=_("Проживание"), blank=True)
-    entertainment = models.CharField(max_length=255, verbose_name=_("Развлечения"))
+    entertainment = models.ManyToManyField(to='Activity', verbose_name=_("Развлечения"), blank=True,
+                                           related_name='entertainment')
     details = models.TextField(verbose_name=_("Детали"))
 
     class Meta:
@@ -363,7 +367,6 @@ class Activity(models.Model):
     name = models.CharField(max_length=255, verbose_name=_("Название"))
     destination = models.ForeignKey(Destination, related_name='activity', on_delete=models.CASCADE,
                                     verbose_name='Пункт')
-    icon = models.ImageField(upload_to='media/icons', verbose_name=_('иконка'))
 
     def __str__(self):
         return self.name

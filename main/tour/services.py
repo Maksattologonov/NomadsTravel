@@ -1,5 +1,5 @@
 from django.db import IntegrityError
-from django.db.models import Q
+from django.db.models import Q, F
 
 from accommodation.models import Accommodation, AccommodationRating
 from .models import City, Destination, Tour, DestinationRating, Region, Activity
@@ -36,7 +36,7 @@ class DestinationService:
     @classmethod
     def get(cls, **filters):
         try:
-            return cls.model.objects.filter(**filters).prefetch_related('tour_id').prefetch_related('activity')
+            return cls.model.objects.filter(**filters).select_related('destination_image')
         except cls.model.DoesNotExist:
             raise ObjectNotFoundException('Destination not found')
 
