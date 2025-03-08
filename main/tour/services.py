@@ -44,23 +44,9 @@ class DestinationService:
     def get_query_param(cls, request):
         filters = Q()
 
-        tour_id = request.GET.get('tour_id')
-        if tour_id:
-            filters &= Q(pk__in=tour_id.split(','))
-        print(filters)
-
-        country_id = request.GET.get('country_id')
-        if country_id:
-            filters &= Q(location__in=country_id.split(','))
-
-        region_id = request.GET.get('region_id')
-        if region_id:
-            filters &= Q(region__in=region_id)
-
-        hotel_id = request.GET.get('hotel_id')
-        if hotel_id:
-            filters &= Q(hotel_id__lte=hotel_id)
-        print(filters)
+        id = request.GET.get('id')
+        if id:
+            filters &= Q(pk__in=id.split(','))
         return cls.model.objects.filter(filters).distinct()
 
     @classmethod
