@@ -56,10 +56,15 @@ class LocationAdmin(ModelAdmin):
 class DestinationAdmin(admin.ModelAdmin):
     inlines = [DestinationImageInlineAdmin]
 
+class TourDayOrderInline(admin.TabularInline):
+    model = TourDayOrder
+    extra = 1  # Количество пустых форм для добавления новых дней
 
 @admin.register(Tour)
-class TourAdmin(ModelAdmin):
-    pass
+class TourAdmin(admin.ModelAdmin):
+    inlines = [TourDayOrderInline]
+    list_display = ('name', 'date_start', 'duration')
+    search_fields = ('name', 'description')
 
 @admin.register(TourComment)
 class TourCommentAdmin(admin.ModelAdmin):
@@ -81,15 +86,18 @@ class DestinationRatingAdmin(ModelAdmin):
     pass
 
 
+class ActivityImageInlineAdmin(admin.TabularInline):
+    model = ActivityImage
+
 @admin.register(Activity)
 class ActivityAdmin(ModelAdmin):
-    pass
+    inlines = [ActivityImageInlineAdmin]
 
 
 
 @admin.register(TourDay)
 class TourDayAdmin(admin.ModelAdmin):
-    list_display = ('tour', 'day_number', 'weather')
+    list_display = ('name', 'weather')
     readonly_fields = ('generate_weather_button',)
 
     def generate_weather_button(self, obj):

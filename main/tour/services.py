@@ -2,7 +2,7 @@ from django.db import IntegrityError
 from django.db.models import Q, F
 
 from accommodation.models import Accommodation, AccommodationRating
-from .models import City, Destination, Tour, DestinationRating, Region, Activity
+from .models import City, Destination, Tour, DestinationRating, Region, Activity, TypeOfTour
 
 from common.exceptions import ObjectNotFoundException, ObjectAlreadyExistsException
 
@@ -123,6 +123,17 @@ class TourService:
             return cls.model.objects.filter(**filters)
         except cls.model.DoesNotExist:
             raise ObjectNotFoundException('Tour not found')
+
+
+class TypeOfTourService:
+    model = TypeOfTour
+
+    @classmethod
+    def filter(cls, **filters):
+        try:
+            return cls.model.objects.filter(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Tour type not found')
 
 
 class DestinationRouteService:

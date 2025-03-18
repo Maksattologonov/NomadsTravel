@@ -20,6 +20,13 @@ class ActivitySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class TypeOfTourSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TypeOfTour
+        fields = '__all__'
+
+
+
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
