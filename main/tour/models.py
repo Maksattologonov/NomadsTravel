@@ -380,17 +380,19 @@ class TourRating(models.Model):
 
 class Activity(models.Model):
     name = models.CharField(max_length=255, verbose_name=_("Название"))
+    description = models.TextField(null=True, blank=True)
+
 
     def __str__(self):
         return self.name
-    #
-    # @property
-    # def geomap_longitude(self):
-    #     return self.destination.location.lat if self.destination.location.lon else None
-    #
-    # @property
-    # def geomap_latitude(self):
-    #     return self.destination.location.lat if self.destination.location.lon else None
+
+    @property
+    def geomap_longitude(self):
+        return  None
+
+    @property
+    def geomap_latitude(self):
+        return None
 
     class Meta:
         db_table = 'activity'

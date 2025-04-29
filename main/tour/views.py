@@ -9,7 +9,7 @@ from common.schemas.tour import AccommodationSchema, CitySchema, DestinationSche
     DestinationsSchema
 from .apis import AccommodationSerializer, GetCitySerializer, DestinationsSerializer, DestinationsTitleSerializer, \
     TourSerializer, DestinationRatingSerializer, DestinationRatingCreateSerializer, DestinationSerializer, \
-    TourDetailSerializer, RegionSerializer, ActivitySerializer, TypeOfTourSerializer
+    TourDetailSerializer, RegionSerializer, ActivitySerializer, TypeOfTourSerializer, ActivitiesSerializer
 from .models import Tour, TypeOfTour
 from .services import AccommodationService, CityService, DestinationService, TourService, DestinationRouteService, \
     RegionService, ActivityService, TypeOfTourService
@@ -118,6 +118,14 @@ class ActivityAPIView(APIView):
     def get(self, request, *args, **kwargs):
         activity = ActivityService.filter()
         serializer = ActivitySerializer(activity, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+class ActivitiesAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        activity = ActivityService.get_all()
+        serializer = ActivitiesSerializer(activity, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     # def get(self, request):

@@ -176,3 +176,11 @@ class ActivityService:
             return cls.model.objects.filter(**filters)
         except cls.model.DoesNotExist:
             raise ObjectNotFoundException('Activity not found')
+
+
+    @classmethod
+    def get_all(cls, **filters):
+        try:
+            return cls.model.objects.filter(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Activity not found')
