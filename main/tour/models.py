@@ -199,6 +199,7 @@ class Tour(models.Model):
                                                 verbose_name=_("Информация о здоровье"), blank=True)
     notes = models.TextField(verbose_name=_("Примечания"), null=True, blank=True)
     video = models.URLField(verbose_name=_("Ссылка на видео"), null=True, blank=True)
+    map = models.URLField(verbose_name=_("Ссылка на карту"), null=True, blank=True)
     main_image = models.ImageField(upload_to="tour/", verbose_name=_("Главное изображение"))
     personal_gear = models.ManyToManyField(to=Gear, verbose_name=_("Снаряжение"), blank=True)
     includes = models.ManyToManyField(to=Includes, verbose_name=_("Включения"), blank=True)
@@ -251,24 +252,17 @@ class TourDayOrder(models.Model):
 
 
 class TourDay(models.Model):
-    MEALS = [
-        ("breakfast", "Звтрак"),
-        ("lunch", "Обед"),
-        ("lunch-box", "Ланч бокс"),
-        ("dinner", "Ужин"),
-    ]
 
     name = models.CharField(verbose_name=_("Наименование"), max_length=255)
     # locations = models.ManyToManyField(Location, verbose_name=_("Локации"))
     destination = models.ManyToManyField(Destination, verbose_name=_('Пункты'))
     description = models.TextField(verbose_name=_("Описание"), null=True)
+    total_distance = models.DecimalField(max_digits=6, decimal_places=2, default=0, verbose_name=_("Общая дистанция"), editable=False)
     main_image = models.ImageField(upload_to="tour/", verbose_name=_("Главное изображение"), null=True)
-    car_range = models.PositiveIntegerField(verbose_name=_('Длина пути на машине'), null=True)
-    tracking_range = models.PositiveIntegerField(verbose_name=_('Длина пути пешком'), null=True)
     height_difference = models.CharField(verbose_name=_('Перепад высоты'), max_length=255, null=True)
     weather = models.CharField(verbose_name=_('Погода'), max_length=255, null=True, blank=True)
     weather_date = models.DateField(verbose_name=_('Дата погоды'), null=True, blank=True)
-    meals = models.CharField(choices=MEALS, verbose_name=_("Питание"), max_length=50, null=True)
+    meals = models.ManyToManyField(Meal, verbose_name=_("Питание"), max_length=50, blank=False, related_name='tour_meals')
     accommodation = models.ManyToManyField(to=Accommodation, related_name='accommodation',
                                            verbose_name=_("Проживание"), blank=True)
     entertainment = models.ManyToManyField(to='Activity', verbose_name=_("Развлечения"), blank=True,
@@ -282,6 +276,11 @@ class TourDay(models.Model):
 
     def __str__(self):
         return self.name
+
+    def update_total_distance(self):
+        total = sum(d.distance for d in self.distances.all())
+        self.total_distance = total
+        self.save(update_fields=['total_distance'])
 
     def fetch_weather(self):
         destination = self.destination.first()
@@ -317,11 +316,36 @@ class TourDay(models.Model):
         return None
 
 
+class TransportDistance(models.Model):
+    TRANSPORT_CHOICES = [
+        ('car', 'Машина'),
+        ('walk', 'Пешком'),
+        ('horse', 'Лошадь'),
+        ('ski', 'Лыжи/Борд'),
+        ('boat', 'Лодка'),
+        ('plane', 'Самолет'),
+        ('helicopter', 'Вертолет'),
+        ('train', 'Поезд'),
+    ]
+
+    tour_day = models.ForeignKey(TourDay, related_name='distances', on_delete=models.CASCADE)
+    transport_type = models.CharField(max_length=10, choices=TRANSPORT_CHOICES, verbose_name=_("Тип транспорта"))
+    distance = models.DecimalField(max_digits=6, decimal_places=2, verbose_name=_("Дистанция"))
+
+    class Meta:
+        verbose_name = _("Тип транспорта")
+        verbose_name_plural = _("Типы транспорта")
+
+    def __str__(self):
+        return self.transport_type
+
+
+
 class Itinerary(models.Model):
     tour_id = models.ForeignKey(Tour, on_delete=models.CASCADE, verbose_name=_('Тур'))
     date = models.DateField(verbose_name=_("Дата"), null=False)
     title = models.CharField(verbose_name=_("Заголовок"), max_length=255)
-    meals = models.ForeignKey(Meal, on_delete=models.DO_NOTHING, verbose_name=_("Еда"))
+    meals = models.ManyToManyField(Meal, related_name='itenerary_meal', verbose_name=_("Еда"))
     accommodation = models.ForeignKey(Accommodation, on_delete=models.DO_NOTHING, verbose_name=_("Проживание"))
     entertainment = models.ForeignKey(Entertainment, on_delete=models.DO_NOTHING, verbose_name=_("Развлечения"))
 

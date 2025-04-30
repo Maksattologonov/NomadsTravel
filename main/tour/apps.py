@@ -6,3 +6,7 @@ class TourConfig(AppConfig):
     name = 'tour'
     verbose_name = 'Тур'
     verbose_name_plural = 'Туры'
+
+
+    def ready(self):
+        import tour.signals

@@ -94,11 +94,15 @@ class ActivityAdmin(ModelAdmin):
     inlines = [ActivityImageInlineAdmin]
 
 
+class TransportDistanceInline(admin.TabularInline):
+    model = TransportDistance
+    extra = 1
 
 @admin.register(TourDay)
 class TourDayAdmin(admin.ModelAdmin):
-    list_display = ('name', 'weather')
-    readonly_fields = ('generate_weather_button',)
+    list_display = ('name', 'weather', 'total_distance')
+    readonly_fields = ('generate_weather_button', 'total_distance')
+    inlines = [TransportDistanceInline]
 
     def generate_weather_button(self, obj):
         if obj.id:
