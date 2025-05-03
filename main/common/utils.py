@@ -23,3 +23,12 @@ def get_weather(lat, lon):
 
 def avg(arr: list) -> float:
     return sum(arr) / len(arr)
+
+
+def get_elevation(lat, lon):
+    url = f'https://api.open-elevation.com/api/v1/lookup?locations={lat},{lon}'
+    response = requests.get(url)
+    if response.status_code == 200:
+        print(response.content)
+        return response.json()['results'][0]['elevation']
+

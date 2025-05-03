@@ -6,3 +6,6 @@ class AccommodationConfig(AppConfig):
     name = 'accommodation'
     verbose_name = 'Размещение'
     verbose_name_plural = 'Размещения'
+
+    def ready(self):
+        import accommodation.signals

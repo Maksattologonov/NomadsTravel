@@ -8,4 +8,5 @@ class AccommodationImageInline(admin.TabularInline):
 
 @admin.register(Accommodation)
 class AccommodationAdmin(admin.ModelAdmin):
-    inlines = [AccommodationImageInline, ]
+    inlines = [AccommodationImageInline]
+    readonly_fields = ['elevation',]

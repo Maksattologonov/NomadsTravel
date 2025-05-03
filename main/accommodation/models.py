@@ -1,6 +1,9 @@
+from decimal import Decimal
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from common.utils import get_elevation
 from tour.managers import Location
 
 
@@ -8,6 +11,7 @@ class Accommodation(models.Model):
     name = models.CharField(max_length=255, verbose_name=_("Наименование"))
     price = models.PositiveIntegerField(verbose_name=_("Цена"))
     location = models.ForeignKey(Location, on_delete=models.CASCADE, verbose_name=_("Локация"))
+    elevation = models.FloatField(default=0, verbose_name=_("Высота над у.м."))
     main_image = models.ImageField(upload_to='accomodation', verbose_name=_("Главное изображение"))
 
     def __str__(self):
@@ -17,6 +21,11 @@ class Accommodation(models.Model):
         verbose_name = "Размещение"
         verbose_name_plural = "Размещения"
         db_table = 'accommodation'
+
+    def update_elevation(self):
+        lat, lon =  self.location.lat, self.location.lon
+        self.elevation = get_elevation(lat, lon)
+        self.save(update_fields=['elevation'])
 
 
 class AccommodationRating(models.Model):
